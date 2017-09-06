@@ -1,0 +1,50 @@
+{
+  "name": "simplechartgenerator",
+  "version": "1.0.0",
+  "description": "A react component that generates svg charts based on a config given",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "webpack-dev-server --progress"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CharukaK/SimpleChartGenerator.git"
+  },
+  "keywords": [
+    "charts",
+    "react",
+    "react-vis",
+    "viz-grammar"
+  ],
+  "author": "Charuka Karunanayake",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CharukaK/SimpleChartGenerator/issues"
+  },
+  "homepage": "https://github.com/CharukaK/SimpleChartGenerator#readme",
+  "dependencies": {
+    "prop-types": "^15.5.10",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "react-vis": "^1.7.5"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-eslint": "^7.2.3",
+    "babel-loader": "^7.1.2",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "css-loader": "^0.28.7",
+    "eslint": "^4.6.1",
+    "eslint-plugin-react": "^7.3.0",
+    "json-loader": "^0.5.7",
+    "node-sass": "^4.5.3",
+    "nodemon": "^1.12.0",
+    "sass-loader": "^6.0.6",
+    "style-loader": "^0.18.2",
+    "webpack": "^3.5.5",
+    "webpack-dev-server": "^2.7.1"
+  }
+}
