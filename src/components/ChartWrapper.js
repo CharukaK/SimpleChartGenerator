@@ -53,18 +53,22 @@ import {
     LineMarkSeries,
     MarkSeries
 } from 'react-vis';
+
+import * as d3 from 'd3';
 import '../../node_modules/react-vis/dist/style.css';
+import PropTypes from 'prop-types';
 
 
 export default class ChartWrapper extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state={
-            data:{},
-            width:props.width,
-            height:props.height,
-            categoryColorMap:new Map()
+        this.state = {
+            dataSets: {},
+            width: props.config.width,
+            height: props.config.height,
+            categoryColorMap: [],
+            initialized: false
         };
     }
 
@@ -73,32 +77,196 @@ export default class ChartWrapper extends React.Component {
      * into categories if it is specified in the config
      * @param nextProps - next set of props received by the Component
      */
-    componentWillReceiveProps(nextProps){
-        let {metadata,config,data}=nextProps;
-        //if config has x attribute then it's either Line Chart, Bar Chart, Area Chart or a map
-        if(config.x){
+    componentWillReceiveProps(nextProps) {
+        let {metadata, config, data} = nextProps;
 
-        }else{
+        let {dataSets, categoryColorMap, initialized} = this.state;
 
+
+        //if config has x attribute then it's either Line Chart, Bar Chart, Area Chart or a Geographical Map
+        if (config.x) {
+            //dependant axis and the independent axis is same in all of the charts
+
+            let xIndex = metadata.names.indexOf(config.x);
+            let yIndex = metadata.names.indexOf(config.charts[0].y);
+
+            //loop through all the chart types in the chart config
+            config.charts.map((chart, chartIndex) => {
+                if (!initialized) {
+                    categoryColorMap.push({
+                        type: chart.type,
+                        categories: {},
+                        mode: chart.mode || null,
+                        colorIndex: 0,
+                        orientation: chart.orientation || 'vertical'
+                    });
+                }
+                let colorScale = chart.colorScale || 'category10';
+                let maxColorIndex = Array.isArray(colorScale) ?
+                    colorScale.length : parseInt(colorScale.substring(8, 10));
+
+                if (chart.color) {
+                    let categoryIndex = metadata.names.indexOf(chart.color);
+                    data.map((datum, datIndex) => {
+                        if (!dataSets.hasOwnProperty(datum[categoryIndex])) {
+                            dataSets[datum[categoryIndex]] = [];
+                        }
+
+
+                        //if the bar chart's orientation is horizontal the xy axis should be switched
+                        if (chart.type === 'bar' && chart.orientation === 'left') {
+                            dataSets[datum[categoryIndex]].push({x: datum[yIndex], y: datum[xIndex]});
+                        } else {
+                            dataSets[datum[categoryIndex]].push({x: datum[xIndex], y: datum[yIndex]});
+                        }
+
+
+                        if (dataSets[datum[categoryIndex]].length > config.maxLength) {
+                            dataSets[datum[categoryIndex]].shift();
+                        }
+
+                        if (chart.colorDomain && !categoryColorMap[chartIndex].categories.hasOwnProperty(datum[categoryIndex])) {
+                            let colorID = chart.colorDomain.indexOf(datum[categoryIndex]);
+                            if (colorID > -1) {
+                                categoryColorMap[chartIndex]
+                                    .categories[datum[categoryIndex]] = Array.isArray(colorScale) ?
+                                    colorScale[colorID] :
+                                    getColorFromSchema(colorScale, colorID);
+                            }
+                        }
+
+                        if (!categoryColorMap[chartIndex].categories.hasOwnProperty(datum[categoryIndex])) {
+                            categoryColorMap[chartIndex].categories[datum[categoryIndex]] = Array.isArray(colorScale) ?
+                                colorScale[categoryColorMap[chartIndex].colorIndex] :
+                                getColorFromSchema(colorScale, categoryColorMap[chartIndex].colorIndex);
+
+                            // categoryColorMap[chartIndex].colorIndex+=1;
+
+                            if (categoryColorMap[chartIndex].colorIndex > maxColorIndex) {
+                                categoryColorMap[chartIndex].colorIndex = 0;
+                            }
+
+                            categoryColorMap[chartIndex].colorIndex = categoryColorMap[chartIndex].colorIndex + 1;
+
+
+                        }
+                    });
+                } else {
+                    //ToDo: plot two variables in the same dataset
+                }
+
+
+            });
+
+            initialized = true;
+        } else {
+            //ToDo:PieCharts and scatterplots
         }
+
+
+        this.setState({
+            dataSets: dataSets,
+            categoryColorMap: categoryColorMap,
+            initialized: initialized
+        });
 
     }
 
-    componentWillUnmount(){
+    componentWillUnmount() {
         this.setState({});
     }
 
 
-    render(){
-        let {metadata,config}=this.props;
-        return(
-            <div>
+    render() {
+        let {metadata, config} = this.props;
+        let {categoryColorMap, dataSets} = this.state;
+        let chartComponents = [];
+        categoryColorMap.map((chart, chartIndex) => {
+            switch (chart.type) {
+                case 'line':
+                    Object.keys(chart.categories).forEach((name) => {
+                        chartComponents.push(
+                            <LineMarkSeries
+                                nullAccessor={(d) => d.y !== null}
+                                data={dataSets[name]}
+                                color={chart.categories[name]}
+                                opacity={0.7}
+                                curve={chart.mode}
+                            />
+                        );
+                    });
+                    break;
+                case 'bar':
+                    if (chart.orientation === 'vertical') {
+                        Object.keys(chart.categories).forEach((name) => {
+                            chartComponents.push(
+                                <VerticalBarSeries
+                                    data={dataSets[name].filter((d) => d.y !== null)}
+                                    color={chart.categories[name]} opacity={0.7}/>
+                            );
+                        });
+                    } else if (chart.orientation === 'left') {
+                        Object.keys(chart.categories).forEach((name) => {
+                            chartComponents.push(
+                                <HorizontalBarSeries
+                                    data={dataSets[name].filter((d) => d.y !== null)}
+                                    color={chart.categories[name]} opacity={0.7}/>
+                            );
+                        });
+                    }
+                    break;
+            }
+        });
 
-            </div>
+
+        return (
+            <XYPlot
+                width={this.state.width}
+                height={this.state.height}
+                animation={false}
+
+
+            >
+
+                <HorizontalGridLines/>
+                <VerticalGridLines/>
+                <XAxis/>
+                <YAxis/>
+                {chartComponents}
+            </XYPlot>
         );
     }
 
 
-    colorPallete=['#12939A','#79C7E3','#1A3177','#FF9833','#EF5D28','#a789ff','#776E57']
 }
+
+
+export function getColorFromSchema(schema, index) {
+    let length = 20, schemeCat;
+
+    switch (schema) {
+        case 'category10':
+            schemeCat = d3.schemeCategory10;
+            length = 10;
+            break;
+        case 'category20':
+            schemeCat = d3.schemeCategory20;
+            break;
+        case 'category20b':
+            schemeCat = d3.schemeCategory20b;
+            break;
+        case 'category20c':
+            schemeCat = d3.schemeCategory20c;
+            break;
+
+    }
+
+    return d3.scaleOrdinal().range(schemeCat).domain(Array.apply(null, {length: length}).map(Number.call, Number))(index);
+}
+
+ChartWrapper.propTypes = {
+    config: PropTypes.object.isRequired,
+    metadata: PropTypes.object.isRequired,
+    data: PropTypes.array.isRequired,
+};
 

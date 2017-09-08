@@ -1,5 +1,5 @@
 import React from 'react';
-import ChartWrapper from "./components/ChartWrapper";
+import ChartWrapper from './components/ChartWrapper';
 import Test from './components/Test';
 
 
@@ -17,38 +17,39 @@ export default class App extends React.Component {
         types: ['linear', 'linear', 'linear', 'ordinal']
     };
 
-    data2 = [[1, 10, 23, 'piston'], [1, 20, 34, 'rotary']];
 
-    /*****************[START] Chart Configurations******************/
+
+    /*****************[START] Chart Config******************/
     lineChartConfig = {
         x: 'rpm',
-        charts: [{type: 'line', y: 'torque', color: 'EngineType', mode: 'curveNatural'}],
-        maxLength: 10,
+        charts: [{ type: 'line', y: 'torque', color: 'EngineType',colorDomain:['','','piston']}],
+        maxLength: 30,
         width: 800,
         height: 450
     };
 
-    /*****************[END] Chart Configurations******************/
+    /*****************[END] Chart Config******************/
+
+
+
     componentDidMount() {
         setInterval(() => {
             this.setState({
                 data: [
-                    [this.state.timer, Math.random() * 100, Math.random() * 100, 'piston'],
+                    [this.state.timer, this.state.timer===20? null :Math.random() * 100, Math.random() * 100, 'piston'],
                     [this.state.timer, Math.random() * 100, Math.random() * 100, 'rotary']
                 ],
                 timer: this.state.timer + 1
             });
 
-        }, 1000);
+        }, 500);
     }
 
-
+    //<ChartWrapper config={this.lineChartConfig} metadata={this.metadata} data={this.state.data}/>
     render() {
         return (
-            <div>
-                <ChartWrapper config={this.lineChartConfig} metadata={this.metadata} data={this.state.data}/>
+            <ChartWrapper config={this.lineChartConfig} metadata={this.metadata} data={this.state.data}/>
 
-            </div>
         );
     }
 }
