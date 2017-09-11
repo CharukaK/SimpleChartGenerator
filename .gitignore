@@ -7,6 +7,7 @@ yarn-error.log*
 
 #ideaStuff
 .idea
+publish
 
 # Runtime data
 pids

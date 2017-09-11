@@ -43,6 +43,7 @@ import {
     YAxis,
     Hint,
     SearchableDiscreteColorLegend,
+    FlexibleWidthXYPlot,
     HorizontalBarSeries,
     VerticalBarSeries,
     HorizontalGridLines,
@@ -51,7 +52,8 @@ import {
     VerticalRectSeries,
     ArcSeries,
     LineMarkSeries,
-    MarkSeries
+    MarkSeries,
+    AreaSeries
 } from 'react-vis';
 
 import * as d3 from 'd3';
@@ -65,10 +67,15 @@ export default class ChartWrapper extends React.Component {
 
         this.state = {
             dataSets: {},
-            width: props.config.width,
+            width: props.config.width-100,
             height: props.config.height,
             categoryColorMap: [],
-            initialized: false
+            initialized: false,
+            orientation:'bottom',
+            stacked:false,
+            animation:props.config.animation || false,
+            multiDimensional:false,
+
         };
     }
 
@@ -80,7 +87,7 @@ export default class ChartWrapper extends React.Component {
     componentWillReceiveProps(nextProps) {
         let {metadata, config, data} = nextProps;
 
-        let {dataSets, categoryColorMap, initialized} = this.state;
+        let {dataSets, categoryColorMap, initialized,orientation,stacked,multiDimensional} = this.state;
 
 
         //if config has x attribute then it's either Line Chart, Bar Chart, Area Chart or a Geographical Map
@@ -92,8 +99,13 @@ export default class ChartWrapper extends React.Component {
 
             //loop through all the chart types in the chart config
             config.charts.map((chart, chartIndex) => {
+
+                let x0index=chart.x0;
+                stacked=chart.mode==='stacked';
                 if (!initialized) {
+
                     categoryColorMap.push({
+
                         type: chart.type,
                         categories: {},
                         mode: chart.mode || null,
@@ -116,8 +128,9 @@ export default class ChartWrapper extends React.Component {
                         //if the bar chart's orientation is horizontal the xy axis should be switched
                         if (chart.type === 'bar' && chart.orientation === 'left') {
                             dataSets[datum[categoryIndex]].push({x: datum[yIndex], y: datum[xIndex]});
+                            orientation='left';
                         } else {
-                            dataSets[datum[categoryIndex]].push({x: datum[xIndex], y: datum[yIndex]});
+                            dataSets[datum[categoryIndex]].push({x: datum[xIndex], y: datum[yIndex],x0:datum[x0index],y0:0});
                         }
 
 
@@ -153,12 +166,50 @@ export default class ChartWrapper extends React.Component {
                     });
                 } else {
                     //ToDo: plot two variables in the same dataset
+                    yIndex=metadata.names.indexOf(chart.y);
+                    multiDimensional=true;
+                    data.map((datum, datIndex) => {
+                        if (!dataSets.hasOwnProperty(metadata.names[yIndex])) {
+                            dataSets[metadata.names[yIndex]] = [];
+                        }
+
+                        //if the bar chart's orientation is horizontal the xy axis should be switched
+                        if (chart.type === 'bar' && chart.orientation === 'left') {
+                            dataSets[metadata.names[yIndex]].push({x: datum[yIndex], y: datum[xIndex]});
+                            orientation='left';
+                        } else {
+                            dataSets[metadata.names[yIndex]].push({x: datum[xIndex], y: datum[yIndex],x0:datum[x0index],y0:0});
+                        }
+
+                        if (dataSets[metadata.names[yIndex]].length > config.maxLength) {
+                            dataSets[metadata.names[yIndex]].shift();
+                        }
+
+
+                        if (!categoryColorMap[chartIndex].categories.hasOwnProperty(metadata.names[yIndex])) {
+                            categoryColorMap[chartIndex].categories[metadata.names[yIndex]] = chart.fill || getColorFromSchema(colorScale, categoryColorMap[chartIndex].colorIndex);
+
+                            // categoryColorMap[chartIndex].colorIndex+=1;
+
+                            if (categoryColorMap[chartIndex].colorIndex > maxColorIndex) {
+                                categoryColorMap[chartIndex].colorIndex = 0;
+                            }
+
+                            categoryColorMap[chartIndex].colorIndex = categoryColorMap[chartIndex].colorIndex + 1;
+
+
+                        }
+
+                    });
                 }
 
 
-            });
 
+
+            });
             initialized = true;
+
+
         } else {
             //ToDo:PieCharts and scatterplots
         }
@@ -167,7 +218,10 @@ export default class ChartWrapper extends React.Component {
         this.setState({
             dataSets: dataSets,
             categoryColorMap: categoryColorMap,
-            initialized: initialized
+            initialized: initialized,
+            orientation:orientation,
+            stacked:stacked,
+            multiDimensional:multiDimensional
         });
 
     }
@@ -179,12 +233,15 @@ export default class ChartWrapper extends React.Component {
 
     render() {
         let {metadata, config} = this.props;
-        let {categoryColorMap, dataSets} = this.state;
+        let {categoryColorMap, dataSets,orientation,stacked,animation} = this.state;
         let chartComponents = [];
+        let legendItems=[];
+        // console.info(dataSets);
         categoryColorMap.map((chart, chartIndex) => {
             switch (chart.type) {
                 case 'line':
                     Object.keys(chart.categories).forEach((name) => {
+                        legendItems.push({title:name,color:chart.categories[name]});
                         chartComponents.push(
                             <LineMarkSeries
                                 nullAccessor={(d) => d.y !== null}
@@ -199,6 +256,7 @@ export default class ChartWrapper extends React.Component {
                 case 'bar':
                     if (chart.orientation === 'vertical') {
                         Object.keys(chart.categories).forEach((name) => {
+                            legendItems.push({title:name,color:chart.categories[name]});
                             chartComponents.push(
                                 <VerticalBarSeries
                                     data={dataSets[name].filter((d) => d.y !== null)}
@@ -207,6 +265,7 @@ export default class ChartWrapper extends React.Component {
                         });
                     } else if (chart.orientation === 'left') {
                         Object.keys(chart.categories).forEach((name) => {
+                            legendItems.push({title:name,color:chart.categories[name]});
                             chartComponents.push(
                                 <HorizontalBarSeries
                                     data={dataSets[name].filter((d) => d.y !== null)}
@@ -215,25 +274,54 @@ export default class ChartWrapper extends React.Component {
                         });
                     }
                     break;
+
+                case 'area':
+                    Object.keys(chart.categories).forEach((name) => {
+                        legendItems.push({title:name,color:chart.categories[name]});
+                        chartComponents.push(
+                            <AreaSeries
+                                nullAccessor={(d) => d.y !== null}
+                                data={dataSets[name]}
+                                color={chart.categories[name]}
+                                opacity={0.7}
+                                curve={chart.mode}
+                            />
+                        );
+                    });
+                    break;
             }
         });
 
 
         return (
-            <XYPlot
-                width={this.state.width}
-                height={this.state.height}
-                animation={false}
+            <div>
+                <div style={{float:'left',width:'80%',display:'inline'}}>
+                    <FlexibleWidthXYPlot
+                        height={this.state.height}
 
+                        animation={animation}
+                        xType={metadata.types[metadata.names.indexOf(config.x)]}
+                        stackBy={stacked? 'y':null}
 
-            >
+                    >
 
-                <HorizontalGridLines/>
-                <VerticalGridLines/>
-                <XAxis/>
-                <YAxis/>
-                {chartComponents}
-            </XYPlot>
+                        <HorizontalGridLines/>
+                        <VerticalGridLines/>
+
+                        {chartComponents}
+                        <XAxis title={orientation==='left'?config.charts[0].y:config.x}/>
+                        <YAxis title={orientation==='left'?config.x:config.charts[0].y}/>
+                    </FlexibleWidthXYPlot>
+                </div>
+
+                <div style={{float:'right',width:'20%',display:'inline'}}>
+                    <SearchableDiscreteColorLegend
+                        width={100}
+                        height={this.state.height}
+                        items={legendItems}
+                    />
+                </div>
+            </div>
         );
     }
 

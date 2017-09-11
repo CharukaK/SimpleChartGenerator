@@ -8,6 +8,7 @@ import {
     YAxis,
     HorizontalGridLines,
     VerticalGridLines,
+    HorizontalBarSeries,
     VerticalBarSeries,
     LineMarkSeries
 } from 'react-vis';
@@ -50,14 +51,14 @@ export default class NullDataExample extends React.Component {
                 width={300}
                 height={300}
                 onMouseLeave={this.onMouseLeave}>
-                <XAxis/>
-                <YAxis/>
+                <XAxis title='rpm' orientation='left'/>
+                <YAxis title='torque' orientation='top'/>
                 <HorizontalGridLines />
                 <VerticalGridLines />
 
-                <AreaSeries nullAccessor={(d) => d.y !== null} onNearestX={this.onNearestX} opacity={0.5} data={DATA[0]} />
-                <LineMarkSeries nullAccessor={(d) => d.y !== null} data={DATA[1]} opacity={0.5} color='red' />
-                <VerticalBarSeries data={DATA[1].filter((d)=>d.y!==null)} opacity={0.5} color='red' />
+                {/*<AreaSeries nullAccessor={(d) => d.y !== null} onNearestX={this.onNearestX} opacity={0.5} data={DATA[0]} />*/}
+                {/*<LineMarkSeries nullAccessor={(d) => d.y !== null} data={DATA[1]} opacity={0.5} color='red' />*/}
+                <HorizontalBarSeries data={DATA[1].filter((d)=>d.y!==null)} opacity={0.5} color='red' />
                 <Crosshair
                     values={this.state.crosshairValues}/>
             </XYPlot>
