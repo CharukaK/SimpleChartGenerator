@@ -176,6 +176,7 @@ export default class AreaChartConfigSample extends React.Component {
                                    <td>int</td>
                                    <td>Maximum length of the dataSet displayed</td>
                                </tr>
+
                                <tr>
                                    <td>height</td>
                                    <td>int</td>
