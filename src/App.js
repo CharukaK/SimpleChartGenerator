@@ -2,7 +2,13 @@ import React from 'react';
 import ChartWrapper from './components/ChartWrapper';
 import Test from './components/Test';
 import {Row} from "./components/util";
+import AppBar from 'material-ui/AppBar';
+import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import LineChartConfigSample from "./Samples/LineChartConfigSample";
+import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
+import FlatButton from 'material-ui/FlatButton';
 
 
 export default class App extends React.Component {
@@ -75,17 +81,18 @@ export default class App extends React.Component {
     render() {
         return (
             <div>
-                {/*<center><h1>Charting Samples</h1></center>*/}
-                {/*<Row title="Line Series" chart="line">*/}
-                    {/*<ChartWrapper config={this.lineChartConfig} metadata={this.metadata} data={this.state.data}/>*/}
-                {/*</Row>*/}
-                {/*<Row title="Bar Series" chart="bar">*/}
-                    {/*<ChartWrapper config={this.barChartConfig} metadata={this.metadata} data={this.state.data}/>*/}
-                {/*</Row>*/}
-                {/*<Row title="Area Series" chart="area">*/}
-                    {/*<ChartWrapper config={this.singleAreaChartConfig} metadata={this.metadata} data={this.state.data2}/>*/}
-                {/*</Row>*/}
-                <LineChartConfigSample/>
+                <center><h1>Charting Config Samples</h1></center>
+                <Row title="Line Series" chart="line" media={true} actionBar={true}>
+                    <ChartWrapper config={this.lineChartConfig} metadata={this.metadata} data={this.state.data}/>
+                </Row>
+                <Row title="Bar Series" chart="bar" media={true} actionBar={true}>
+                    <ChartWrapper config={this.barChartConfig} metadata={this.metadata} data={this.state.data}/>
+                </Row>
+                <Row title="Area Series" chart="area" media={true} actionBar={true}>
+                    <ChartWrapper config={this.singleAreaChartConfig} metadata={this.metadata} data={this.state.data2}/>
+                </Row>
+
+                {/*<Row title="asd" chart="asd"/>*/}
             </div>
 
         );
