@@ -75,8 +75,11 @@ export default class ChartWrapper extends React.Component {
             stacked:false,
             animation:props.config.animation || false,
             multiDimensional:false,
-
+            crosshairValues:[]
         };
+
+        this._onNearestX=this._onNearestX.bind(this);
+        this._onMouseLeave=this._onMouseLeave.bind(this);
     }
 
     /**
@@ -227,9 +230,31 @@ export default class ChartWrapper extends React.Component {
     }
 
     componentWillUnmount() {
-        this.setState({});
+        // this.setState({});
     }
 
+    /**
+     * Event handler for onNearestX
+     *
+     * @param value Selected Value
+     * @param event Event object
+     * @param innerX Left position of the mark
+     * @param index index of the data point in the data set array
+     *
+     * @private
+     */
+    _onNearestX(value,obj){
+        console.info(value,obj);
+    }
+
+    /**
+     * Event handler for on Mouse Leave
+     *
+     * @private
+     */
+    _onMouseLeave(){
+
+    }
 
     render() {
         let {metadata, config} = this.props;
@@ -260,7 +285,8 @@ export default class ChartWrapper extends React.Component {
                             chartComponents.push(
                                 <VerticalBarSeries
                                     data={dataSets[name].filter((d) => d.y !== null)}
-                                    color={chart.categories[name]} opacity={0.7}/>
+                                    color={chart.categories[name]} opacity={0.7}
+                                />
                             );
                         });
                     } else if (chart.orientation === 'left') {

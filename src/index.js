@@ -16,10 +16,10 @@ ReactDOM.render(
     <Router>
         <div>
             <Route exact path="/" component={App}/>
-            <Route path="/test" component={Test}/>
-            <Route path="/line-charts" component={LineChart}/>
-            <Route path="/bar-charts" component={BarChart}/>
-            <Route path="/area-charts" component={AreaChart}/>
+            <Route exact path="/test" component={Test}/>
+            <Route exact path="/line-charts" component={LineChart}/>
+            <Route exact path="/bar-charts" component={BarChart}/>
+            <Route exact path="/area-charts/" component={AreaChart}/>
         </div>
     </Router>, document.getElementById('root'));
 

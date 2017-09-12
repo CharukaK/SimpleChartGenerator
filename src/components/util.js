@@ -44,7 +44,7 @@ export class Row extends React.Component{
                         </CardMedia>
                         <CardActions>
                             <FlatButton label={this.props.actionBar?'View Usage' : ''} onClick={()=>{
-                                window.location.href='/'+this.props.chart+'-charts';
+                                window.location.href=this.props.chart+'-charts';
                             }}/>
                             {/*<FlatButton label="Action2" />*/}
                         </CardActions>
@@ -69,7 +69,7 @@ Row.propTypes = {
     children: PropTypes.any.isRequired,
     chart:PropTypes.string.isRequired,
     media:PropTypes.bool,
-    actionBar:PropTypes.bool
+    actionBar:PropTypes.bool.isRequired
 };
 
 
