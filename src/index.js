@@ -4,6 +4,7 @@ import App from './App';
 import Test from './components/Test';
 import LineChart from './Samples/LineChartConfigSample';
 import BarChart from './Samples/BarChartConfigSample';
+import AreaChart from './Samples/AreaChartConfigSample';
 import {
     BrowserRouter as Router,
     Route,
@@ -18,6 +19,7 @@ ReactDOM.render(
             <Route path="/test" component={Test}/>
             <Route path="/line-charts" component={LineChart}/>
             <Route path="/bar-charts" component={BarChart}/>
+            <Route path="/area-charts" component={AreaChart}/>
         </div>
     </Router>, document.getElementById('root'));
 

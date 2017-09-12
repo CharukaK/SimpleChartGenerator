@@ -172,7 +172,7 @@ export default class ChartWrapper extends React.Component {
                         if (!dataSets.hasOwnProperty(metadata.names[yIndex])) {
                             dataSets[metadata.names[yIndex]] = [];
                         }
-
+                        stacked=chart.mode==='stacked';
                         //if the bar chart's orientation is horizontal the xy axis should be switched
                         if (chart.type === 'bar' && chart.orientation === 'left') {
                             dataSets[metadata.names[yIndex]].push({x: datum[yIndex], y: datum[xIndex]});

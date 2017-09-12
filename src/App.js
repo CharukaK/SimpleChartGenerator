@@ -77,7 +77,7 @@ export default class App extends React.Component {
         }, 2000);
     }
 
-    //<ChartWrapper config={this.lineChartConfig} metadata={this.metadata} data={this.state.data}/>
+    //<ChartWrapper config={this.areaChartConfig} metadata={this.metadata} data={this.state.data}/>
     render() {
         return (
             <div>

@@ -5,7 +5,7 @@ import './css/Table.css';
 // import t from 'GridTest';
 
 
-export default class BarChartConfigSample extends React.Component {
+export default class AreaChartConfigSample extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -22,36 +22,29 @@ export default class BarChartConfigSample extends React.Component {
 
 
     /*****************[START] Chart Config******************/
-    barChartConfig = {
+    areaChartConfig = {
         x: 'rpm',
-        charts: [{type: 'bar', y: 'torque', color: 'EngineType', colorDomain: ['', '', 'piston']}],
+        charts: [{type: 'area', y: 'torque', color: 'EngineType', colorDomain: ['', '', 'piston']}],
         maxLength: 7,
         width: 700,
         height: 450,
         animation: true
     };
 
-    barHorizontalChartConfig = {
+
+
+    stackedAreaChartConfig = {
         x: 'rpm',
-        charts: [{type: 'bar', y: 'torque', color: 'EngineType', colorDomain: ['', '', 'piston'],orientation:'left'}],
+        charts: [{type: 'area', y: 'torque', color: 'EngineType', colorDomain: ['', '', 'piston'],mode:'stacked'}],
         maxLength: 7,
         width: 700,
         height: 450,
         animation: true
     };
 
-    stackedBarChartConfig = {
+    singleAreaChartConfig = {
         x: 'rpm',
-        charts: [{type: 'bar', y: 'torque', color: 'EngineType', colorDomain: ['', '', 'piston'],mode:'stacked'}],
-        maxLength: 7,
-        width: 700,
-        height: 450,
-        animation: true
-    };
-
-    singleBarChartConfig = {
-        x: 'rpm',
-        charts: [{type: 'bar', y: 'horsepower', fill: '#2ca02c'}, {type: 'bar', y: 'torque', fill: '#ff7f0e'}],
+        charts: [{type: 'area', y: 'horsepower', fill: '#2ca02c'}, {type: 'area', y: 'torque', fill: '#ff7f0e'}],
         maxLength: 7,
         width: 700,
         height: 450,
@@ -83,8 +76,8 @@ export default class BarChartConfigSample extends React.Component {
         return (
             <div>
                 <center><h1>Line Chart Config Samples</h1></center>
-                <Row title="Group MultiLine Chart Sample" chart="line" media={true} actionBar={false}>
-                    <ChartWrapper config={this.barChartConfig} metadata={this.metadata} data={this.state.data}/>
+                <Row title="Group Area Chart Sample" chart="line" media={true} actionBar={false}>
+                    <ChartWrapper config={this.areaChartConfig} metadata={this.metadata} data={this.state.data}/>
                     <br/>
                     <div>
 
@@ -93,7 +86,7 @@ export default class BarChartConfigSample extends React.Component {
 
                            {'{\n' +
                            '\tx: \'rpm\',\n' +
-                           '\tcharts: [\n\t    { type: \'bar\', y: \'torque\', color: \'EngineType\',colorDomain:[\'\',\'\',\'piston\']}\n\t],\n' +
+                           '\tcharts: [\n\t    { type: \'area\', y: \'torque\', color: \'EngineType\',colorDomain:[\'\',\'\',\'piston\']}\n\t],\n' +
                            '\tmaxLength: 7,\n' +
                            '\twidth: 700,\n' +
                            '\theight: 450,\n' +
@@ -103,35 +96,15 @@ export default class BarChartConfigSample extends React.Component {
                        </pre>
                     </div>
                 </Row>
-                <Row title="Multi Line Chart Sample" chart="line" media={true} actionBar={false}>
-                    <ChartWrapper config={this.singleBarChartConfig} metadata={this.metadata} data={this.state.data2}/>
+                <Row title="Multi Area Chart Sample" chart="line" media={true} actionBar={false}>
+                    <ChartWrapper config={this.singleAreaChartConfig} metadata={this.metadata} data={this.state.data2}/>
                     <br/>
                     <div>
                        <pre>
                            <p>Configuration: </p>
                            {'{\n' +
                            '\tx: \'rpm\',\n' +
-                           '\tcharts: [\n\t    { type: \'bar\', y: \'horsepower\', fill:\'#2ca02c\'}\n\t    { type: \'bar\', y: \'torque\', fill:\'#ff7f0e\'}\n\t],\n' +
-                           '\tmaxLength: 7,\n' +
-                           '\twidth: 700,\n' +
-                           '\theight: 450,\n' +
-                           '\tanimation:true\n}'
-
-                           }
-                       </pre>
-                    </div>
-                </Row>
-                <Row title="Group MultiLine Chart Sample Horizontal" chart="line" media={true} actionBar={false}>
-                    <ChartWrapper config={this.barHorizontalChartConfig} metadata={this.metadata} data={this.state.data}/>
-                    <br/>
-                    <div>
-
-                       <pre>
-                           <p>Configuration: </p>
-
-                           {'{\n' +
-                           '\tx: \'rpm\',\n' +
-                           '\tcharts: [\n\t    { type: \'bar\', y: \'torque\', color: \'EngineType\',orientation:\'left\',colorDomain:[\'\',\'\',\'piston\']}\n\t],\n' +
+                           '\tcharts: [\n\t    { type: \'area\', y: \'horsepower\', fill:\'#2ca02c\'}\n\t    { type: \'area\', y: \'torque\', fill:\'#ff7f0e\'}\n\t],\n' +
                            '\tmaxLength: 7,\n' +
                            '\twidth: 700,\n' +
                            '\theight: 450,\n' +
@@ -142,8 +115,9 @@ export default class BarChartConfigSample extends React.Component {
                     </div>
                 </Row>
 
-                <Row title="Group MultiLine Chart Sample stacked" chart="line" media={true} actionBar={false}>
-                    <ChartWrapper config={this.stackedBarChartConfig} metadata={this.metadata} data={this.state.data}/>
+
+                <Row title="Group Area Chart Sample stacked" chart="line" media={true} actionBar={false}>
+                    <ChartWrapper config={this.stackedAreaChartConfig} metadata={this.metadata} data={this.state.data}/>
                     <br/>
                     <div>
 
@@ -152,7 +126,7 @@ export default class BarChartConfigSample extends React.Component {
 
                            {'{\n' +
                            '\tx: \'rpm\',\n' +
-                           '\tcharts: [\n\t    { type: \'bar\', y: \'torque\', color: \'EngineType\',mode:\'stacked\',colorDomain:[\'\',\'\',\'piston\']}\n\t],\n' +
+                           '\tcharts: [\n\t    { type: \'area\', y: \'torque\', color: \'EngineType\',mode:\'stacked\',colorDomain:[\'\',\'\',\'piston\']}\n\t],\n' +
                            '\tmaxLength: 7,\n' +
                            '\twidth: 700,\n' +
                            '\theight: 450,\n' +
@@ -237,11 +211,7 @@ export default class BarChartConfigSample extends React.Component {
                                    <td>string</td>
                                    <td>whether the chart should be stacked or not (default:null)</td>
                                </tr>
-                               <tr>
-                                   <td>orientation</td>
-                                   <td>string</td>
-                                   <td>orientation of the chart (default:vertical)</td>
-                               </tr>
+
                                <tr>
                                    <td>colorScale</td>
                                    <td>string | Array(string)</td>
