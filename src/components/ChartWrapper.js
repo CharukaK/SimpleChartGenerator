@@ -36,6 +36,7 @@
  */
 
 
+
 import React from 'react';
 import {
     XYPlot,
@@ -53,13 +54,28 @@ import {
     ArcSeries,
     LineMarkSeries,
     MarkSeries,
-    AreaSeries
+    AreaSeries,
+    Crosshair
 } from 'react-vis';
 
 import * as d3 from 'd3';
 import '../../node_modules/react-vis/dist/style.css';
 import PropTypes from 'prop-types';
 
+
+//constant dataset for testing
+const DATA = [
+    [
+        {x: 1, y: 10},
+        {x: 2, y: 7},
+        {x: 3, y: 15}
+    ],
+    [
+        {x: 1, y: 20},
+        {x: 2, y: 5},
+        {x: 3, y: 15}
+    ]
+];
 
 export default class ChartWrapper extends React.Component {
     constructor(props) {
@@ -75,12 +91,19 @@ export default class ChartWrapper extends React.Component {
             stacked:false,
             animation:props.config.animation || false,
             multiDimensional:false,
-            crosshairValues:[]
+            crosshairValues:[],
+            hintValue:null
         };
 
-        this._onNearestX=this._onNearestX.bind(this);
-        this._onMouseLeave=this._onMouseLeave.bind(this);
+        // this._onNearestX=this._onNearestX.bind(this);
+        // this._onMouseLeave=this._onMouseLeave.bind(this);
+        this._onValueMouseOver=this._onValueMouseOver.bind(this);
+        this._onValueMouseOut=this._onValueMouseOut.bind(this);
+
+
     }
+
+
 
     /**
      * Will run every time a component receives new props or change of props and this will sort out the data
@@ -233,26 +256,37 @@ export default class ChartWrapper extends React.Component {
         // this.setState({});
     }
 
+    onComponentMouseOut(){
+        this.setState({
+            hintValue:null
+        });
+    }
+
+
     /**
-     * Event handler for onNearestX
-     *
-     * @param value Selected Value
-     * @param info
-     *
+     * event handler for onMouseOver handles showing hints  when mouse pass over
+     * @param dataPoint Data object associated with the point
+     * @param event Event object for mouse over event
      * @private
      */
-    _onNearestX(value,info){
-        console.info(value,info);
+    _onValueMouseOver(dataPoint,event){
+        this.setState({
+            hintValue:dataPoint
+        });
+        // console.info(dataPoint);
     }
 
     /**
-     * Event handler for on Mouse Leave
-     *
+     * event handler for onMouseOut handles the removing of hints
      * @private
      */
-    _onMouseLeave(){
-
+    _onValueMouseOut(){
+        this.setState({
+            hintValue:null
+        });
     }
+
+    // _onNearestX(value,)//ToDo: Tooltip for AreaChart
 
     render() {
         let {metadata, config} = this.props;
@@ -267,12 +301,13 @@ export default class ChartWrapper extends React.Component {
                         legendItems.push({title:name,color:chart.categories[name]});
                         chartComponents.push(
                             <LineMarkSeries
+                                key={`line-${chartIndex}-${chart.categories[name]}`}
                                 nullAccessor={(d) => d.y !== null}
                                 data={dataSets[name]}
                                 color={chart.categories[name]}
                                 opacity={0.7}
                                 curve={chart.mode}
-                                onNearestX={this._onNearestX}
+                                onValueMouseOver={this._onValueMouseOver}
                             />
                         );
                     });
@@ -283,9 +318,10 @@ export default class ChartWrapper extends React.Component {
                             legendItems.push({title:name,color:chart.categories[name]});
                             chartComponents.push(
                                 <VerticalBarSeries
+                                    key={`verticalBar-${chartIndex}-${chart.categories[name]}`}
                                     data={dataSets[name].filter((d) => d.y !== null)}
                                     color={chart.categories[name]} opacity={0.7}
-                                    onNearestX={this._onNearestX}
+                                    onValueMouseOver={this._onValueMouseOver}
                                 />
                             );
                         });
@@ -294,9 +330,10 @@ export default class ChartWrapper extends React.Component {
                             legendItems.push({title:name,color:chart.categories[name]});
                             chartComponents.push(
                                 <HorizontalBarSeries
+                                    key={`horizontalBar-${chartIndex}-${chart.categories[name]}`}
                                     data={dataSets[name].filter((d) => d.y !== null)}
                                     color={chart.categories[name]} opacity={0.7}
-                                    onNearestX={this._onNearestX}
+                                    onValueMouseOver={this._onValueMouseOver}
                                 />
                             );
                         });
@@ -308,12 +345,13 @@ export default class ChartWrapper extends React.Component {
                         legendItems.push({title:name,color:chart.categories[name]});
                         chartComponents.push(
                             <AreaSeries
+                                key={`area-${chartIndex}-${chart.categories[name]}`}
                                 nullAccessor={(d) => d.y !== null}
                                 data={dataSets[name]}
                                 color={chart.categories[name]}
                                 opacity={0.7}
                                 curve={chart.mode}
-                                onNearestX={this._onNearestX}
+
                             />
                         );
                     });
@@ -327,7 +365,6 @@ export default class ChartWrapper extends React.Component {
                 <div style={{float:'left',width:'80%',display:'inline'}}>
                     <FlexibleWidthXYPlot
                         height={this.state.height}
-
                         animation={animation}
                         xType={metadata.types[metadata.names.indexOf(config.x)]}
                         stackBy={stacked? 'y':null}
@@ -340,6 +377,13 @@ export default class ChartWrapper extends React.Component {
                         {chartComponents}
                         <XAxis title={orientation==='left'?config.charts[0].y:config.x}/>
                         <YAxis title={orientation==='left'?config.x:config.charts[0].y}/>
+                        <Crosshair values={this.state.crosshairValues}/>
+
+                        {
+                            this.state.hintValue?
+                                <Hint value={this.state.hintValue}/>:
+                                null
+                        }
                     </FlexibleWidthXYPlot>
                 </div>
 

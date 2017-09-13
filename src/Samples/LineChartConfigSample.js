@@ -121,6 +121,7 @@ export default class LineChartConfigSample extends React.Component {
                        <pre>
                            <p>Main Properties</p>
                            <table>
+                               <tbody>
                                <tr>
                                    <th>Property</th>
                                    <th>Type</th>
@@ -146,11 +147,13 @@ export default class LineChartConfigSample extends React.Component {
                                    <td>int</td>
                                    <td>Height of the chart in pixels</td>
                                </tr>
+                               </tbody>
 
                            </table>
                            <br/>
                            <p>Chart Object Properties</p>
                            <table>
+                               <tbody>
                                <tr>
                                    <th>Property</th>
                                    <th>Type</th>
@@ -179,13 +182,15 @@ export default class LineChartConfigSample extends React.Component {
                                <tr>
                                    <td>colorScale</td>
                                    <td>string | Array(string)</td>
-                                   <td>color set to use in the charts for predefined colors check <a href="https://github.com/d3/d3-3.x-api-reference/blob/master/Ordinal-Scales.md#categorical-colors">d3-documentation</a></td>
+                                   <td>color set to use in the charts for predefined colors check <a
+                                       href="https://github.com/d3/d3-3.x-api-reference/blob/master/Ordinal-Scales.md#categorical-colors">d3-documentation</a></td>
                                </tr>
                                <tr>
                                    <td>colorDomain</td>
                                    <td>Array(string)</td>
                                    <td>if a certain category is required to be plotted in a certain color</td>
                                </tr>
+                               </tbody>
                            </table>
                        </pre>
                     </div>

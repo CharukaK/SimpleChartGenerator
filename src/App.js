@@ -9,6 +9,7 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import LineChartConfigSample from "./Samples/LineChartConfigSample";
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
+import VizG from './components/VizGConverter';
 
 
 export default class App extends React.Component {
@@ -83,7 +84,7 @@ export default class App extends React.Component {
             <div>
                 <center><h1>Charting Config Samples</h1></center>
                 <Row title="Line Series" chart="line" media={true} actionBar={true}>
-                    <ChartWrapper config={this.lineChartConfig} metadata={this.metadata} data={this.state.data}/>
+                    <VizG config={this.lineChartConfig} metadata={this.metadata} data={this.state.data}/>
                 </Row>
                 <Row title="Bar Series" chart="bar" media={true} actionBar={true}>
                     <ChartWrapper config={this.barChartConfig} metadata={this.metadata} data={this.state.data}/>

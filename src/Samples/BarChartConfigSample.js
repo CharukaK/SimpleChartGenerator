@@ -28,7 +28,7 @@ export default class BarChartConfigSample extends React.Component {
         maxLength: 7,
         width: 700,
         height: 450,
-        animation: true
+
     };
 
     barHorizontalChartConfig = {

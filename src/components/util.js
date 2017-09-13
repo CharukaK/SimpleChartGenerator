@@ -43,7 +43,7 @@ export class Row extends React.Component{
                             {this.props.children}
                         </CardMedia>
                         <CardActions>
-                            <FlatButton label={this.props.actionBar?'View Usage' : ''} onClick={()=>{
+                            <FlatButton label={this.props.actionBar?'View Usage' : ' '} onClick={()=>{
                                 window.location.href=this.props.chart+'-charts';
                             }}/>
                             {/*<FlatButton label="Action2" />*/}
