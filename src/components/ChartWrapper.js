@@ -237,14 +237,12 @@ export default class ChartWrapper extends React.Component {
      * Event handler for onNearestX
      *
      * @param value Selected Value
-     * @param event Event object
-     * @param innerX Left position of the mark
-     * @param index index of the data point in the data set array
+     * @param info
      *
      * @private
      */
-    _onNearestX(value,obj){
-        console.info(value,obj);
+    _onNearestX(value,info){
+        console.info(value,info);
     }
 
     /**
@@ -274,6 +272,7 @@ export default class ChartWrapper extends React.Component {
                                 color={chart.categories[name]}
                                 opacity={0.7}
                                 curve={chart.mode}
+                                onNearestX={this._onNearestX}
                             />
                         );
                     });
@@ -286,6 +285,7 @@ export default class ChartWrapper extends React.Component {
                                 <VerticalBarSeries
                                     data={dataSets[name].filter((d) => d.y !== null)}
                                     color={chart.categories[name]} opacity={0.7}
+                                    onNearestX={this._onNearestX}
                                 />
                             );
                         });
@@ -295,7 +295,9 @@ export default class ChartWrapper extends React.Component {
                             chartComponents.push(
                                 <HorizontalBarSeries
                                     data={dataSets[name].filter((d) => d.y !== null)}
-                                    color={chart.categories[name]} opacity={0.7}/>
+                                    color={chart.categories[name]} opacity={0.7}
+                                    onNearestX={this._onNearestX}
+                                />
                             );
                         });
                     }
@@ -311,6 +313,7 @@ export default class ChartWrapper extends React.Component {
                                 color={chart.categories[name]}
                                 opacity={0.7}
                                 curve={chart.mode}
+                                onNearestX={this._onNearestX}
                             />
                         );
                     });
