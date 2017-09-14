@@ -17,9 +17,9 @@ module.exports = {
     "plugins": ["react"],
     "rules": {
 
-        "linebreak-style": ["error", "unix"],
-        "quotes": ["error", "single"],
-        "semi": ["error", "always"],
+        "linebreak-style": ["warn", "unix"],
+        "quotes": ["warn", "single"],
+        "semi": ["warn", "always"],
         "no-console": ["warn", {"allow": ["info", "error"]}]
     }
 };

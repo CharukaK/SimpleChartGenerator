@@ -65,7 +65,7 @@ export default class App extends React.Component {
         setInterval(() => {
             this.setState({
                 data: [
-                    [this.state.timer, this.state.timer===20? null :Math.random() * 100, 10, 'piston'],
+                    [this.state.timer, this.state.timer===20? null :Math.random() * 100, 10, this.state.timer%2? 'piston2' :'piston'],
                     [this.state.timer, Math.random() * 100, 10, 'rotary']
                 ],
                 data2: [
@@ -86,12 +86,12 @@ export default class App extends React.Component {
                 <Row title="Line Series" chart="line" media={true} actionBar={true}>
                     <VizG config={this.lineChartConfig} metadata={this.metadata} data={this.state.data}/>
                 </Row>
-                {/*<Row title="Bar Series" chart="bar" media={true} actionBar={true}>*/}
-                    {/*<ChartWrapper config={this.barChartConfig} metadata={this.metadata} data={this.state.data}/>*/}
-                {/*</Row>*/}
-                {/*<Row title="Area Series" chart="area" media={true} actionBar={true}>*/}
-                    {/*<ChartWrapper config={this.singleAreaChartConfig} metadata={this.metadata} data={this.state.data2}/>*/}
-                {/*</Row>*/}
+                <Row title="Bar Series" chart="bar" media={true} actionBar={true}>
+                    <VizG config={this.barChartConfig} metadata={this.metadata} data={this.state.data}/>
+                </Row>
+                <Row title="Area Series" chart="area" media={true} actionBar={true}>
+                    <VizG config={this.singleAreaChartConfig} metadata={this.metadata} data={this.state.data2}/>
+                </Row>
 
                 {/*<Row title="asd" chart="asd"/>*/}
             </div>

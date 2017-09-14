@@ -2,6 +2,7 @@ import React from 'react';
 import ChartWrapper from '../components/ChartWrapper';
 import {Row} from '../components/util';
 import './css/Table.css';
+import VizG from "../components/VizG";
 // import t from 'GridTest';
 
 
@@ -84,7 +85,7 @@ export default class BarChartConfigSample extends React.Component {
             <div>
                 <center><h1>Line Chart Config Samples</h1></center>
                 <Row title="Group MultiLine Chart Sample" chart="line" media={true} actionBar={false}>
-                    <ChartWrapper config={this.barChartConfig} metadata={this.metadata} data={this.state.data}/>
+                    <VizG config={this.barChartConfig} metadata={this.metadata} data={this.state.data}/>
                     <br/>
                     <div>
 
@@ -104,7 +105,7 @@ export default class BarChartConfigSample extends React.Component {
                     </div>
                 </Row>
                 <Row title="Multi Line Chart Sample" chart="line" media={true} actionBar={false}>
-                    <ChartWrapper config={this.singleBarChartConfig} metadata={this.metadata} data={this.state.data2}/>
+                    <VizG config={this.singleBarChartConfig} metadata={this.metadata} data={this.state.data2}/>
                     <br/>
                     <div>
                        <pre>
@@ -122,7 +123,7 @@ export default class BarChartConfigSample extends React.Component {
                     </div>
                 </Row>
                 <Row title="Group MultiLine Chart Sample Horizontal" chart="line" media={true} actionBar={false}>
-                    <ChartWrapper config={this.barHorizontalChartConfig} metadata={this.metadata} data={this.state.data}/>
+                    <VizG config={this.barHorizontalChartConfig} metadata={this.metadata} data={this.state.data}/>
                     <br/>
                     <div>
 
@@ -143,7 +144,7 @@ export default class BarChartConfigSample extends React.Component {
                 </Row>
 
                 <Row title="Group MultiLine Chart Sample stacked" chart="line" media={true} actionBar={false}>
-                    <ChartWrapper config={this.stackedBarChartConfig} metadata={this.metadata} data={this.state.data}/>
+                    <VizG config={this.stackedBarChartConfig} metadata={this.metadata} data={this.state.data}/>
                     <br/>
                     <div>
 

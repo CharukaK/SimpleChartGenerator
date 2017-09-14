@@ -2,6 +2,7 @@ import React from 'react';
 import ChartWrapper from '../components/ChartWrapper';
 import {Row} from '../components/util';
 import './css/Table.css';
+import VizG from "../components/VizG";
 // import t from 'GridTest';
 
 
@@ -77,7 +78,7 @@ export default class AreaChartConfigSample extends React.Component {
             <div>
                 <center><h1>Line Chart Config Samples</h1></center>
                 <Row title="Group Area Chart Sample" chart="line" media={true} actionBar={false}>
-                    <ChartWrapper config={this.areaChartConfig} metadata={this.metadata} data={this.state.data}/>
+                    <VizG config={this.areaChartConfig} metadata={this.metadata} data={this.state.data}/>
                     <br/>
                     <div>
 
@@ -97,7 +98,7 @@ export default class AreaChartConfigSample extends React.Component {
                     </div>
                 </Row>
                 <Row title="Multi Area Chart Sample" chart="line" media={true} actionBar={false}>
-                    <ChartWrapper config={this.singleAreaChartConfig} metadata={this.metadata} data={this.state.data2}/>
+                    <VizG config={this.singleAreaChartConfig} metadata={this.metadata} data={this.state.data2}/>
                     <br/>
                     <div>
                        <pre>
@@ -117,7 +118,7 @@ export default class AreaChartConfigSample extends React.Component {
 
 
                 <Row title="Group Area Chart Sample stacked" chart="line" media={true} actionBar={false}>
-                    <ChartWrapper config={this.stackedAreaChartConfig} metadata={this.metadata} data={this.state.data}/>
+                    <VizG config={this.stackedAreaChartConfig} metadata={this.metadata} data={this.state.data}/>
                     <br/>
                     <div>
 

@@ -2,6 +2,7 @@ import React from 'react';
 import ChartWrapper from '../components/ChartWrapper';
 import {Row} from '../components/util';
 import './css/Table.css';
+import VizG from "../components/VizG";
 // import t from 'GridTest';
 
 
@@ -66,10 +67,10 @@ export default class LineChartConfigSample extends React.Component {
             <div>
                 <center><h1>Line Chart Config Samples</h1></center>
                 <Row title="Group MultiLine Chart Sample" chart="line" media={true} actionBar={false}>
-                    <ChartWrapper config={this.lineChartConfig} metadata={this.metadata} data={this.state.data}/>
+                    <VizG config={this.lineChartConfig} metadata={this.metadata} data={this.state.data}/>
                 </Row>
                 <Row title="Multi Line Chart Sample" chart="line" media={true} actionBar={false}>
-                    <ChartWrapper config={this.singleLineChartConfig} metadata={this.metadata} data={this.state.data2}/>
+                    <VizG config={this.singleLineChartConfig} metadata={this.metadata} data={this.state.data2}/>
                 </Row>
                 <Row title="Configuration for Group MultiLine Chart Sample" chart="line">
                     <div>

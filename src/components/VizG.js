@@ -54,7 +54,8 @@ import {
     LineMarkSeries,
     MarkSeries,
     AreaSeries,
-    Crosshair
+    Crosshair,
+    DiscreteColorLegend
 } from 'react-vis';
 
 import * as d3 from 'd3';
@@ -62,31 +63,36 @@ import '../../node_modules/react-vis/dist/style.css';
 import PropTypes from 'prop-types';
 
 
-export default class VizG extends React.Component{
-    constructor(props){
+export default class VizG extends React.Component {
+    constructor(props) {
         super(props);
 
         this.state = {
             dataSets: {},
-            width: props.config.width-100,
+            width: props.config.width - 100,
             height: props.config.height,
             chartArray: [],
             initialized: false,
-            orientation:'bottom',
-            stacked:false,
-            animation:props.config.animation || false,
-            multiDimensional:false,
-            crosshairValues:[],
-            hintValue:null
+            orientation: 'bottom',
+            stacked: false,
+            animation: props.config.animation || false,
+            multiDimensional: false,
+            crosshairValues: [],
+            hintValue: null
         };
 
-        this._sortAndPopulateDataSet(props);
+        this._sortAndPopulateDataSet=this._sortAndPopulateDataSet.bind(this);
+
     }
 
     componentWillReceiveProps(nextProps) {
         this._sortAndPopulateDataSet(nextProps);
     }
-    
+
+    componentDidMount() {
+        this._sortAndPopulateDataSet(this.props);
+    }
+
     componentWillUnmount() {
         this.setState({});
     }
@@ -95,115 +101,106 @@ export default class VizG extends React.Component{
     /**
      * will sort and populate the dataSet that's defined in the state according to the given config
      * @param props Props that received
+     * @private
      */
-    _sortAndPopulateDataSet(props){
-        let {metadata,config,data} =props;
-        let {dataSets,chartArray,initialized,orientation,stacked,multiDimensional}=this.state;
+    _sortAndPopulateDataSet(props) {
+        let {metadata, config, data} = props;
+        let {dataSets, chartArray, initialized, orientation, stacked, multiDimensional} = this.state;
 
         //if x is defined it could be either a Line,Bar, Area or Geographical chart
-        if(config.x){
-            let xIndex=metadata.names.indexOf(config.x);//independant variable won't change between charts
+        if (config.x) {
+
+            let xIndex=metadata.names.indexOf(config.x);
+
+
             config.charts.map((chart,chartIndex)=>{
-                let x0Index=metadata.names.indexOf(chart.x0);//x0 is defined for time series bar charts
-                let yIndex=metadata.names.indexOf(chart.y);//index of y
-
-                stacked=(chart.mode==='stacked');
-
-                if (!initialized) {
-
+                let yIndex= metadata.names.indexOf(chart.y);
+                let x0index=metadata.names.indexOf(chart.x0);
+                let categoricalIndex=metadata.names.indexOf(chart.color) || -1;
+                let dataSetName='';
+                let maxLength=chart.maxLength;
+                if(!initialized){
                     chartArray.push({
+                        type:chart.type,
+                        categories:{},
+                        mode:chart.mode || null,
+                        colorIndex:0,
+                        orientation:chart.orientation || 'bottom'
 
-                        type: chart.type,
-                        categories: {},
-                        mode: chart.mode || null,
-                        colorIndex: 0,
-                        orientation: chart.orientation || 'vertical'
                     });
-
-                    let colorScale=chart.colorScale || 'category10';
-                    let maxColorIndex=Array.isArray(colorScale)?
-                        colorScale.length:parseInt(colorScale.substring(8,10));
-
-                    let categoryIndex=metadata.names.indexOf(chart.color);
-                    let dataSetName;
-
-                    if(!chart.color){
-                       dataSetName=metadata.names[yIndex];
-                       multiDimensional=true;
-                    }
-
-                    data.map((datum,datIndex)=>{
-                        if(categoryIndex>-1){
-                            dataSetName=datum[categoryIndex];
-                        }
-
-                        if(!dataSets.hasOwnProperty(dataSetName)){
-                            dataSets[dataSetName]=[];
-                        }
-
-                        //if the bar chart's orientation is horizontal the xy axis should be switched
-                        if (chart.type === 'bar' && chart.orientation === 'left') {
-                            dataSets[dataSetName].push({x: datum[yIndex], y: datum[xIndex]});
-                            orientation='left';
-                        } else {
-                            dataSets[dataSetName].push({x: datum[xIndex], y: datum[yIndex],x0:datum[x0Index],y0:0});
-                        }
-
-
-                        if (dataSets[dataSetName].length > config.maxLength) {
-                            dataSets[dataSetName].shift();
-                        }
-
-                        if (chart.colorDomain && !chartArray[chartIndex].categories.hasOwnProperty(dataSetName)) {
-                            let colorID = chart.colorDomain.indexOf(dataSetName);
-                            if (colorID > -1) {
-                                chartArray[chartIndex]
-                                    .categories[datum[categoryIndex]] = Array.isArray(colorScale) ?
-                                    colorScale[colorID] :
-                                    this._getColorFromSchema(colorScale, colorID);
-                            }
-                        }
-
-                        if (!chartArray[chartIndex].categories.hasOwnProperty(dataSetName)) {
-                            chartArray[chartIndex].categories[datum[categoryIndex]] = Array.isArray(colorScale) ?
-                                colorScale[chartArray[chartIndex].colorIndex] :
-                                this._getColorFromSchema(colorScale, chartArray[chartIndex].colorIndex);
-
-                            // chartArray[chartIndex].colorIndex+=1;
-
-                            if (chartArray[chartIndex].colorIndex > maxColorIndex) {
-                                chartArray[chartIndex].colorIndex = 0;
-                            }
-
-                            chartArray[chartIndex].colorIndex = chartArray[chartIndex].colorIndex + 1;
-
-
-                        }
-                    });
-
-
-
                 }
 
 
+                data.map((datum,datIndex)=>{
+
+                    if(categoricalIndex>-1){
+                        dataSetName=datum[categoricalIndex];
+                    }else {
+                        dataSetName=metadata.names[yIndex];
+                        multiDimensional=true;
+                    }
+
+                    if(!dataSets.hasOwnProperty(dataSetName)){
+                        dataSets[dataSetName]=[];
+                    }
+
+
+                    if(chart.type==='bar'&&chart.orientation==='left'){
+                        dataSets[dataSetName].push({x:datum[yIndex],y:datum[xIndex],y0:datum[x0index]});
+                        orientation='left';
+                    }else {
+                        dataSets[dataSetName].push({x:datum[xIndex],y:datum[yIndex],x0:datum[x0index]});
+                    }
+
+                    if(dataSets[dataSetName].length>maxLength){
+                        dataSets[dataSetName].shift();
+                    }
+
+
+
+
+                });
+
+
+
+
+
+
+
+
+
+
             });
-        }else{
+
+        } else {
             //ToDo: scatter plots and pie charts
         }
+
+        initialized = true;
+
+
+        this.setState({
+            dataSets:dataSets,
+            chartArray:chartArray,
+            initialized:initialized,
+            orientation:orientation,
+            stacked:stacked,
+            multiDimensional:multiDimensional
+        });
 
 
     }
 
-    
+
     /**
      * will return a string color based on the scema and index provided
      * @param schema Name of the d3 ordinal color scale schema (default: category10)
      * @param index Index of the color in the array
-     * @private 
+     * @private
      */
-    _getColorFromSchema(schema, index) {
+    static _getColorFromSchema(schema, index) {
         let length = 20, schemeCat;
-    
+
         switch (schema) {
             case 'category10':
                 schemeCat = d3.schemeCategory10;
@@ -218,15 +215,120 @@ export default class VizG extends React.Component{
             case 'category20c':
                 schemeCat = d3.schemeCategory20c;
                 break;
-    
+
         }
-    
+
         return d3.scaleOrdinal().range(schemeCat).domain(Array.apply(null, {length: length}).map(Number.call, Number))(index);
     }
 
-    render(){
-        return(
+    render() {
+        let {metadata, config} = this.props;
+        let {chartArray, dataSets, orientation, stacked, animation} = this.state;
+        let chartComponents = [];
+        let legendItems = [];
+
+        chartArray.map((chart, chartIndex) => {
+            switch (chart.type) {
+                case 'line':
+                    Object.keys(chart.categories).forEach((name) => {
+                        legendItems.push({title: name, color: chart.categories[name]});
+                        chartComponents.push(
+                            <LineMarkSeries
+                                key={`line-${chartIndex}-${chart.categories[name]}`}
+                                nullAccessor={(d) => d.y !== null}
+                                data={dataSets[name]}
+                                color={chart.categories[name]}
+                                opacity={0.7}
+                                curve={chart.mode}
+                            />
+                        );
+                    });
+                    break;
+                case 'bar':
+                    if (chart.orientation === 'left') {
+                        Object.keys(chart.categories).forEach((name) => {
+                            legendItems.push({title: name, color: chart.categories[name]});
+                            chartComponents.push(
+                                <HorizontalBarSeries
+                                    key={`bar-${chartIndex}-${chart.categories[name]}`}
+
+                                    data={dataSets[name].filter((d) => d.y !== null)}
+                                    color={chart.categories[name]}
+                                    opacity={0.7}
+                                    curve={chart.mode}
+                                />
+                            );
+                        });
+                    } else {
+                        Object.keys(chart.categories).forEach((name) => {
+                            legendItems.push({title: name, color: chart.categories[name]});
+                            chartComponents.push(
+                                <VerticalBarSeries
+                                    key={`bar-${chartIndex}-${chart.categories[name]}`}
+
+                                    data={dataSets[name].filter((d) => d.y !== null)}
+                                    color={chart.categories[name]}
+                                    opacity={0.7}
+                                    curve={chart.mode}
+                                />
+                            );
+                        });
+                    }
+                    break;
+                case 'area':
+                    Object.keys(chart.categories).forEach((name) => {
+                        console.info(name);
+                        legendItems.push({title: name, color: chart.categories[name]});
+                        chartComponents.push(
+                            <AreaSeries
+                                key={`area-${chartIndex}-${chart.categories[name]}`}
+                                nullAccessor={(d) => d.y !== null}
+                                data={dataSets[name]}
+                                color={chart.categories[name]}
+                                opacity={0.7}
+                                curve={chart.mode}
+                            />
+                        );
+                    });
+                    break;
+
+
+            }
+        });
+
+        return (
             <div>
+                <div style={{float: 'left', width: '80%', display: 'inline'}}>
+                    <FlexibleWidthXYPlot
+                        height={this.state.height}
+                        animation={false}
+                        xType={metadata.types[metadata.names.indexOf(config.x)]}
+                        stackBy={stacked ? 'y' : null}
+
+                    >
+
+                        <HorizontalGridLines/>
+                        <VerticalGridLines/>
+
+                        {chartComponents}
+                        <XAxis title={orientation === 'left' ? config.charts[0].y : config.x}/>
+                        <YAxis title={orientation === 'left' ? config.x : config.charts[0].y}/>
+                        <Crosshair values={this.state.crosshairValues}/>
+
+                        {
+                            this.state.hintValue ?
+                                <Hint value={this.state.hintValue}/> :
+                                null
+                        }
+                    </FlexibleWidthXYPlot>
+                </div>
+                <div style={{float: 'right', width: '20%', display: 'inline'}}>
+                    <DiscreteColorLegend
+                        width={100}
+                        height={this.state.height}
+                        items={legendItems}
+                    />
+                </div>
 
             </div>
         );
