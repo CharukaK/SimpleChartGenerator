@@ -9,7 +9,7 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import LineChartConfigSample from "./Samples/LineChartConfigSample";
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
-import VizG from './components/VizGConverter';
+import VizG from './components/VizG';
 
 
 export default class App extends React.Component {
@@ -86,12 +86,12 @@ export default class App extends React.Component {
                 <Row title="Line Series" chart="line" media={true} actionBar={true}>
                     <VizG config={this.lineChartConfig} metadata={this.metadata} data={this.state.data}/>
                 </Row>
-                <Row title="Bar Series" chart="bar" media={true} actionBar={true}>
-                    <ChartWrapper config={this.barChartConfig} metadata={this.metadata} data={this.state.data}/>
-                </Row>
-                <Row title="Area Series" chart="area" media={true} actionBar={true}>
-                    <ChartWrapper config={this.singleAreaChartConfig} metadata={this.metadata} data={this.state.data2}/>
-                </Row>
+                {/*<Row title="Bar Series" chart="bar" media={true} actionBar={true}>*/}
+                    {/*<ChartWrapper config={this.barChartConfig} metadata={this.metadata} data={this.state.data}/>*/}
+                {/*</Row>*/}
+                {/*<Row title="Area Series" chart="area" media={true} actionBar={true}>*/}
+                    {/*<ChartWrapper config={this.singleAreaChartConfig} metadata={this.metadata} data={this.state.data2}/>*/}
+                {/*</Row>*/}
 
                 {/*<Row title="asd" chart="asd"/>*/}
             </div>

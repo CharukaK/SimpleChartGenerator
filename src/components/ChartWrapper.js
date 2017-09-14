@@ -179,7 +179,7 @@ export default class ChartWrapper extends React.Component {
                                 colorScale[categoryColorMap[chartIndex].colorIndex] :
                                 getColorFromSchema(colorScale, categoryColorMap[chartIndex].colorIndex);
 
-                            // categoryColorMap[chartIndex].colorIndex+=1;
+                            // chartArray[chartIndex].colorIndex+=1;
 
                             if (categoryColorMap[chartIndex].colorIndex > maxColorIndex) {
                                 categoryColorMap[chartIndex].colorIndex = 0;
@@ -215,7 +215,7 @@ export default class ChartWrapper extends React.Component {
                         if (!categoryColorMap[chartIndex].categories.hasOwnProperty(metadata.names[yIndex])) {
                             categoryColorMap[chartIndex].categories[metadata.names[yIndex]] = chart.fill || getColorFromSchema(colorScale, categoryColorMap[chartIndex].colorIndex);
 
-                            // categoryColorMap[chartIndex].colorIndex+=1;
+                            // chartArray[chartIndex].colorIndex+=1;
 
                             if (categoryColorMap[chartIndex].colorIndex > maxColorIndex) {
                                 categoryColorMap[chartIndex].colorIndex = 0;
