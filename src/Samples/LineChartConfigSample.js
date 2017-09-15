@@ -68,11 +68,7 @@ export default class LineChartConfigSample extends React.Component {
                 <center><h1>Line Chart Config Samples</h1></center>
                 <Row title="Group MultiLine Chart Sample" chart="line" media={true} actionBar={false}>
                     <VizG config={this.lineChartConfig} metadata={this.metadata} data={this.state.data}/>
-                </Row>
-                <Row title="Multi Line Chart Sample" chart="line" media={true} actionBar={false}>
-                    <VizG config={this.singleLineChartConfig} metadata={this.metadata} data={this.state.data2}/>
-                </Row>
-                <Row title="Configuration for Group MultiLine Chart Sample" chart="line">
+                    <br/>
                     <div>
                        <pre>
                            {'{\n' +
@@ -87,8 +83,9 @@ export default class LineChartConfigSample extends React.Component {
                        </pre>
                     </div>
                 </Row>
-
-                <Row title="Configuration for Multi Line Sample" chart="line">
+                <Row title="Multi Line Chart Sample" chart="line" media={true} actionBar={false}>
+                    <VizG config={this.singleLineChartConfig} metadata={this.metadata} data={this.state.data2}/>
+                    <br/>
                     <div>
                        <pre>
                            {'{\n' +
@@ -103,6 +100,7 @@ export default class LineChartConfigSample extends React.Component {
                        </pre>
                     </div>
                 </Row>
+
 
                 <Row title="Sample Data Set" chart="line">
                     <div>

@@ -66,7 +66,7 @@ import PropTypes from 'prop-types';
 
 
 export default class VizG extends React.Component {
-    
+
     constructor(props) {
         super(props);
 
@@ -85,7 +85,8 @@ export default class VizG extends React.Component {
         };
 
         this._sortAndPopulateDataSet = this._sortAndPopulateDataSet.bind(this);
-        this._onValueMouseOver=this._onValueMouseOver.bind(this);
+        this._onValueMouseOver = this._onValueMouseOver.bind(this);
+        this._onPlaneMouseOut = this._onPlaneMouseOut.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -107,8 +108,10 @@ export default class VizG extends React.Component {
      * @param dataSetName Name of the dataSet that data point belongs to
      * @private
      */
-    _onValueMouseOver(value,info,dataSetName){
-
+    _onValueMouseOver(value, index, dataSetName) {
+        this.setState({
+            hintValue: value
+        });
     }
 
 
@@ -133,10 +136,10 @@ export default class VizG extends React.Component {
                 let x0index = metadata.names.indexOf(chart.x0);
                 let categoricalIndex = metadata.names.indexOf(chart.color) || -1;
                 let dataSetName = '';
-                let maxColorIndex=Array.isArray(colorScale)?
-                    colorScale.length:parseInt(colorScale.substring(8, 10));
+                let maxColorIndex = Array.isArray(colorScale) ?
+                    colorScale.length : parseInt(colorScale.substring(8, 10));
 
-                stacked=(chart.mode==='stacked');
+                stacked = (chart.mode === 'stacked');
 
                 if (!initialized) {
                     chartArray.push({
@@ -183,19 +186,19 @@ export default class VizG extends React.Component {
 
                                 if (colorId > -1) {
                                     chartArray[chartIndex].categories[dataSetName] = Array.isArray(colorScale) ?
-                                        colorScale[colorId]:VizG._getColorFromSchema(colorScale,colorId);
+                                        colorScale[colorId] : VizG._getColorFromSchema(colorScale, colorId);
                                 }
                             }
 
-                            if(!chartArray[chartIndex].categories[dataSetName]){
+                            if (!chartArray[chartIndex].categories[dataSetName]) {
                                 chartArray[chartIndex].categories[dataSetName] = Array.isArray(colorScale) ?
-                                    colorScale[chartArray[chartIndex].colorIndex]:
+                                    colorScale[chartArray[chartIndex].colorIndex] :
                                     VizG._getColorFromSchema(colorScale, chartArray[chartIndex].colorIndex++);
                             }
 
 
-                            if(chartArray[chartIndex].colorIndex>maxColorIndex){
-                                chartArray[chartIndex].colorIndex=0;
+                            if (chartArray[chartIndex].colorIndex > maxColorIndex) {
+                                chartArray[chartIndex].colorIndex = 0;
                             }
 
                         } else {
@@ -228,6 +231,16 @@ export default class VizG extends React.Component {
 
     }
 
+
+    /**
+     * event handler for mouse out from the XY plane
+     * @private
+     */
+    _onPlaneMouseOut() {
+        this.setState({
+            hintValue: null
+        });
+    }
 
     /**
      * will return a string color based on the scema and index provided
@@ -263,6 +276,7 @@ export default class VizG extends React.Component {
         let {chartArray, dataSets, orientation, stacked, animation} = this.state;
         let chartComponents = [];
         let legendItems = [];
+        let xIndex = metadata.names.indexOf(config.x);
 
         chartArray.map((chart, chartIndex) => {
             switch (chart.type) {
@@ -277,38 +291,87 @@ export default class VizG extends React.Component {
                                 color={chart.categories[name]}
                                 opacity={0.7}
                                 curve={chart.mode}
+                                onValueMouseOver={(value, info) => {
+
+                                    this._onValueMouseOver(value, info.index, name);
+                                }}
+                                onValueMouseOut={this._onPlaneMouseOut}
                             />
                         );
-                       });
+                    });
                     break;
                 case 'bar':
                     if (chart.orientation === 'left') {
                         Object.keys(chart.categories).forEach((name) => {
                             legendItems.push({title: name, color: chart.categories[name]});
-                            chartComponents.push(
-                                <HorizontalBarSeries
-                                    key={`bar-${chartIndex}-${chart.categories[name]}`}
+                            if (metadata.types[xIndex] !== 'time') {
+                                chartComponents.push(
+                                    <HorizontalBarSeries
+                                        key={`bar-${chartIndex}-${chart.categories[name]}`}
 
-                                    data={dataSets[name].filter((d) => d.y !== null)}
-                                    color={chart.categories[name]}
-                                    opacity={0.7}
-                                    curve={chart.mode}
-                                />
-                            );
+                                        data={dataSets[name].filter((d) => d.y !== null)}
+                                        color={chart.categories[name]}
+                                        opacity={0.7}
+                                        curve={chart.mode}
+                                        onValueMouseOver={(value, info) => {
+                                            this._onValueMouseOver(value, info.index, name);
+                                        }}
+                                        onValueMouseOut={this._onPlaneMouseOut}
+                                    />
+                                );
+                            } else {
+                                chartComponents.push(
+                                    <HorizontalRectSeries
+                                        key={`bar-${chartIndex}-${chart.categories[name]}`}
+
+                                        data={dataSets[name].filter((d) => d.y !== null)}
+                                        color={chart.categories[name]}
+                                        opacity={0.7}
+                                        curve={chart.mode}
+                                        onValueMouseOver={(value, info) => {
+                                            this._onValueMouseOver(value, info.index, name);
+                                        }}
+                                        onValueMouseOut={this._onPlaneMouseOut}
+                                    />
+                                );
+                            }
                         });
                     } else {
                         Object.keys(chart.categories).forEach((name) => {
                             legendItems.push({title: name, color: chart.categories[name]});
-                            chartComponents.push(
-                                <VerticalBarSeries
-                                    key={`bar-${chartIndex}-${chart.categories[name]}`}
+                            if (metadata.types[xIndex] !== 'time') {
+                                chartComponents.push(
+                                    <VerticalBarSeries
+                                        key={`bar-${chartIndex}-${chart.categories[name]}`}
 
-                                    data={dataSets[name].filter((d) => d.y !== null)}
-                                    color={chart.categories[name]}
-                                    opacity={0.7}
-                                    curve={chart.mode}
-                                />
-                            );
+                                        data={dataSets[name].filter((d) => d.y !== null)}
+                                        color={chart.categories[name]}
+                                        opacity={0.7}
+                                        curve={chart.mode}
+                                        onValueMouseOver={(value, info) => {
+                                            this._onValueMouseOver(value, info.index, name);
+                                        }}
+
+                                        onValueMouseOut={this._onPlaneMouseOut}
+                                    />
+                                );
+                            } else {
+                                chartComponents.push(
+                                    <VerticalRectSeries
+                                        key={`bar-${chartIndex}-${chart.categories[name]}`}
+
+                                        data={dataSets[name].filter((d) => d.y !== null)}
+                                        color={chart.categories[name]}
+                                        opacity={0.7}
+                                        curve={chart.mode}
+                                        onValueMouseOver={(value, info) => {
+                                            this._onValueMouseOver(value, info.index, name);
+                                        }}
+
+                                        onValueMouseOut={this._onPlaneMouseOut}
+                                    />
+                                );
+                            }
                         });
                     }
                     break;
@@ -324,6 +387,10 @@ export default class VizG extends React.Component {
                                 color={chart.categories[name]}
                                 opacity={0.7}
                                 curve={chart.mode}
+                                onValueMouseOver={(value, info) => {
+                                    this._onValueMouseOver(value, info.index, name);
+                                }}
+                                onValueMouseOut={this._onPlaneMouseOut}
                             />
                         );
                     });
@@ -341,8 +408,8 @@ export default class VizG extends React.Component {
                         animation={animation}
                         xType={metadata.types[metadata.names.indexOf(config.x)]}
                         stackBy={stacked ? 'y' : null}
-                        margin={{left:100}}
-
+                        margin={{left: 100}}
+                        onMouseLeave={this._onPlaneMouseOut}
 
                     >
 

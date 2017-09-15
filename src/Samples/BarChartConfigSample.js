@@ -34,20 +34,20 @@ export default class BarChartConfigSample extends React.Component {
 
     barHorizontalChartConfig = {
         x: 'rpm',
-        charts: [{type: 'bar', y: 'torque', color: 'EngineType', colorDomain: ['', '', 'piston'],orientation:'left'}],
+        charts: [{type: 'bar', y: 'torque', color: 'EngineType', colorDomain: ['', '', 'piston'], orientation: 'left'}],
         maxLength: 7,
         width: 700,
         height: 450,
-        animation: true
+        // animation: false
     };
 
     stackedBarChartConfig = {
         x: 'rpm',
-        charts: [{type: 'bar', y: 'torque', color: 'EngineType', colorDomain: ['', '', 'piston'],mode:'stacked'}],
+        charts: [{type: 'bar', y: 'torque', color: 'EngineType', colorDomain: ['', '', 'piston'], mode: 'stacked'}],
         maxLength: 7,
         width: 700,
         height: 450,
-        animation: true
+        // animation: true
     };
 
     singleBarChartConfig = {
@@ -56,7 +56,7 @@ export default class BarChartConfigSample extends React.Component {
         maxLength: 7,
         width: 700,
         height: 450,
-        animation: true
+        // animation: true
     };
 
     /*****************[END] Chart Config******************/
@@ -183,6 +183,7 @@ export default class BarChartConfigSample extends React.Component {
                        <pre>
                            <p>Main Properties</p>
                            <table>
+                               <tbody>
                                <tr>
                                    <th>Property</th>
                                    <th>Type</th>
@@ -209,10 +210,12 @@ export default class BarChartConfigSample extends React.Component {
                                    <td>Height of the chart in pixels</td>
                                </tr>
 
+                               </tbody>
                            </table>
                            <br/>
                            <p>Chart Object Properties</p>
                            <table>
+                               <tbody>
                                <tr>
                                    <th>Property</th>
                                    <th>Type</th>
@@ -254,6 +257,7 @@ export default class BarChartConfigSample extends React.Component {
                                    <td>Array(string)</td>
                                    <td>if a certain category is required to be plotted in a certain color</td>
                                </tr>
+                               </tbody>
                            </table>
                        </pre>
                     </div>
