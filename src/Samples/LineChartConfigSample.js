@@ -29,7 +29,7 @@ export default class LineChartConfigSample extends React.Component {
         maxLength: 7,
         width: 700,
         height: 450,
-        animation: true
+        // animation: true
     };
 
     singleLineChartConfig = {
@@ -38,7 +38,7 @@ export default class LineChartConfigSample extends React.Component {
         maxLength: 7,
         width: 700,
         height: 450,
-        animation: true
+        // animation: true
     };
 
     /*****************[END] Chart Config******************/

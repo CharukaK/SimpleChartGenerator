@@ -103,10 +103,11 @@ export default class VizG extends React.Component {
     /**
      * function for on Value mouse over of the charting library
      * @param value Value associated with the mark
-     * @param info
+     * @param info Info of the event(object) index of dataSet and mouseEvent etc
+     * @param dataSetName Name of the dataSet that data point belongs to
      * @private
      */
-    _onValueMouseOver(value,info){
+    _onValueMouseOver(value,info,dataSetName){
 
     }
 
@@ -134,6 +135,9 @@ export default class VizG extends React.Component {
                 let dataSetName = '';
                 let maxColorIndex=Array.isArray(colorScale)?
                     colorScale.length:parseInt(colorScale.substring(8, 10));
+
+                stacked=(chart.mode==='stacked');
+
                 if (!initialized) {
                     chartArray.push({
                         type: chart.type,
@@ -331,12 +335,14 @@ export default class VizG extends React.Component {
 
         return (
             <div>
-                <div style={{float: 'left', width: '80%', display: 'inline'}}>
+                <div style={{float: 'left', width: '87%', display: 'inline'}}>
                     <FlexibleWidthXYPlot
                         height={this.state.height}
                         animation={animation}
                         xType={metadata.types[metadata.names.indexOf(config.x)]}
                         stackBy={stacked ? 'y' : null}
+                        margin={{left:100}}
+
 
                     >
 
@@ -355,7 +361,7 @@ export default class VizG extends React.Component {
                         }
                     </FlexibleWidthXYPlot>
                 </div>
-                <div style={{float: 'right', width: '20%', display: 'inline'}}>
+                <div style={{float: 'right', width: '13%', display: 'inline'}}>
                     <DiscreteColorLegend
                         width={100}
                         height={this.state.height}
