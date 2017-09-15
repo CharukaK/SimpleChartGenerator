@@ -1,5 +1,4 @@
 import React from 'react';
-import ChartWrapper from '../components/ChartWrapper';
 import {Row} from '../components/util';
 import './css/Table.css';
 import VizG from "../components/VizG";

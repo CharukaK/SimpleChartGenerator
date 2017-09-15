@@ -1,5 +1,5 @@
 import React from 'react';
-import ChartWrapper from './components/ChartWrapper';
+
 import Test from './components/Test';
 import {Row} from "./components/util";
 import AppBar from 'material-ui/AppBar';
