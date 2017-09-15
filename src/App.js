@@ -87,12 +87,15 @@ export default class App extends React.Component {
                 <center><h1>Charting Config Samples</h1></center>
                 <Row title="Line Series" chart="line" media={true} actionBar={true}>
                     <VizG config={this.lineChartConfig} metadata={this.metadata} data={this.state.data}/>
+                    <br/><br/>
                 </Row>
                 <Row title="Bar Series" chart="bar" media={true} actionBar={true}>
                     <VizG config={this.barChartConfig} metadata={this.metadata} data={this.state.data}/>
+                    <br/><br/>
                 </Row>
                 <Row title="Area Series" chart="area" media={true} actionBar={true}>
                     <VizG config={this.singleAreaChartConfig} metadata={this.metadata} data={this.state.data2}/>
+                    <br/><br/>
                 </Row>
 
                 {/*<Row title="asd" chart="asd"/>*/}

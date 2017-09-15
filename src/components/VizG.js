@@ -273,7 +273,7 @@ export default class VizG extends React.Component {
 
     render() {
         let {metadata, config} = this.props;
-        let {chartArray, dataSets, orientation, stacked, animation} = this.state;
+        let {chartArray, dataSets, orientation, stacked, animation,multiDimensional} = this.state;
         let chartComponents = [];
         let legendItems = [];
         let xIndex = metadata.names.indexOf(config.x);
@@ -418,7 +418,7 @@ export default class VizG extends React.Component {
 
                         {chartComponents}
                         <XAxis title={orientation === 'left' ? config.charts[0].y : config.x}/>
-                        <YAxis title={orientation === 'left' ? config.x : config.charts[0].y}/>
+                        <YAxis title={multiDimensional?'':(orientation === 'left' ? config.x : config.charts[0].y)}/>
                         <Crosshair values={this.state.crosshairValues}/>
 
                         {
