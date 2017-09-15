@@ -57,6 +57,8 @@ import {
     Crosshair,
     DiscreteColorLegend
 } from 'react-vis';
+import AreaMarkSeries from './AreaMarkSeries';
+
 
 import * as d3 from 'd3';
 import '../../node_modules/react-vis/dist/style.css';
@@ -64,6 +66,7 @@ import PropTypes from 'prop-types';
 
 
 export default class VizG extends React.Component {
+    
     constructor(props) {
         super(props);
 
@@ -81,8 +84,8 @@ export default class VizG extends React.Component {
             hintValue: null
         };
 
-        this._sortAndPopulateDataSet=this._sortAndPopulateDataSet.bind(this);
-
+        this._sortAndPopulateDataSet = this._sortAndPopulateDataSet.bind(this);
+        this._onValueMouseOver=this._onValueMouseOver.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -95,6 +98,16 @@ export default class VizG extends React.Component {
 
     componentWillUnmount() {
         this.setState({});
+    }
+
+    /**
+     * function for on Value mouse over of the charting library
+     * @param value Value associated with the mark
+     * @param info
+     * @private
+     */
+    _onValueMouseOver(value,info){
+
     }
 
 
@@ -110,86 +123,84 @@ export default class VizG extends React.Component {
         //if x is defined it could be either a Line,Bar, Area or Geographical chart
         if (config.x) {
 
-            let xIndex=metadata.names.indexOf(config.x);
+            let xIndex = metadata.names.indexOf(config.x);
 
 
-            config.charts.map((chart,chartIndex)=>{
-                let colorScale=chart.colorScale || 'category10';
-                let yIndex= metadata.names.indexOf(chart.y);
-                let x0index=metadata.names.indexOf(chart.x0);
-                let categoricalIndex=metadata.names.indexOf(chart.color) || -1;
-                let dataSetName='';
-
-                if(!initialized){
+            config.charts.map((chart, chartIndex) => {
+                let colorScale = chart.colorScale || 'category10';
+                let yIndex = metadata.names.indexOf(chart.y);
+                let x0index = metadata.names.indexOf(chart.x0);
+                let categoricalIndex = metadata.names.indexOf(chart.color) || -1;
+                let dataSetName = '';
+                let maxColorIndex=Array.isArray(colorScale)?
+                    colorScale.length:parseInt(colorScale.substring(8, 10));
+                if (!initialized) {
                     chartArray.push({
-                        type:chart.type,
-                        categories:{},
-                        mode:chart.mode || null,
-                        colorIndex:0,
-                        orientation:chart.orientation || 'bottom'
+                        type: chart.type,
+                        categories: {},
+                        mode: chart.mode || null,
+                        colorIndex: 0,
+                        orientation: chart.orientation || 'bottom'
 
                     });
                 }
 
 
-                data.map((datum,datIndex)=>{
+                data.map((datum, datIndex) => {
 
-                    if(categoricalIndex>-1){
-                        dataSetName=datum[categoricalIndex];
-                    }else {
-                        dataSetName=metadata.names[yIndex];
-                        multiDimensional=true;
+                    if (categoricalIndex > -1) {
+                        dataSetName = datum[categoricalIndex];
+                    } else {
+                        dataSetName = metadata.names[yIndex];
+                        multiDimensional = true;
                     }
 
-                    if(!dataSets.hasOwnProperty(dataSetName)){
-                        dataSets[dataSetName]=[];
+                    if (!dataSets.hasOwnProperty(dataSetName)) {
+                        dataSets[dataSetName] = [];
                     }
 
                     // console.info(config.maxLength);
-                    if(dataSets[dataSetName].length>config.maxLength){
+                    if (dataSets[dataSetName].length > config.maxLength) {
                         dataSets[dataSetName].shift();
                     }
 
-                    if(chart.type==='bar'&&chart.orientation==='left'){
-                        dataSets[dataSetName].push({x:datum[yIndex],y:datum[xIndex],y0:datum[x0index]});
-                        orientation='left';
-                    }else {
-                        dataSets[dataSetName].push({x:datum[xIndex],y:datum[yIndex],x0:datum[x0index]});
+                    if (chart.type === 'bar' && chart.orientation === 'left') {
+                        dataSets[dataSetName].push({x: datum[yIndex], y: datum[xIndex], y0: datum[x0index]});
+                        orientation = 'left';
+                    } else {
+                        dataSets[dataSetName].push({x: datum[xIndex], y: datum[yIndex], x0: datum[x0index]});
                     }
 
 
+                    if (!chartArray[chartIndex].categories.hasOwnProperty(dataSetName)) {
+                        if (!chart.fill) {
+                            if (chart.colorDomain) {
+                                let colorId = chart.colorDomain.indexOf(datum[categoricalIndex]);
 
-                    if(!chartArray[chartIndex].categories.hasOwnProperty(dataSetName)){
-                        if(!chart.fill){
-                            if(chart.colorDomain){
-                                let colorId=chart.colorDomain.indexOf(datum[categoricalIndex]);
-
-                                if(colorId>-1){
-                                    // chartArray.categories[dataSetName]=Array.isArray(colorScale)?
-
+                                if (colorId > -1) {
+                                    chartArray[chartIndex].categories[dataSetName] = Array.isArray(colorScale) ?
+                                        colorScale[colorId]:VizG._getColorFromSchema(colorScale,colorId);
                                 }
                             }
 
+                            if(!chartArray[chartIndex].categories[dataSetName]){
+                                chartArray[chartIndex].categories[dataSetName] = Array.isArray(colorScale) ?
+                                    colorScale[chartArray[chartIndex].colorIndex]:
+                                    VizG._getColorFromSchema(colorScale, chartArray[chartIndex].colorIndex++);
+                            }
 
 
+                            if(chartArray[chartIndex].colorIndex>maxColorIndex){
+                                chartArray[chartIndex].colorIndex=0;
+                            }
 
-
-                        }else {
-                            chartArray[chartIndex].categories[dataSetName]=chart.fill;
+                        } else {
+                            chartArray[chartIndex].categories[dataSetName] = chart.fill;
                         }
                     }
 
 
-
                 });
-
-
-
-
-
-
-
-
 
 
             });
@@ -202,12 +213,12 @@ export default class VizG extends React.Component {
 
 
         this.setState({
-            dataSets:dataSets,
-            chartArray:chartArray,
-            initialized:initialized,
-            orientation:orientation,
-            stacked:stacked,
-            multiDimensional:multiDimensional
+            dataSets: dataSets,
+            chartArray: chartArray,
+            initialized: initialized,
+            orientation: orientation,
+            stacked: stacked,
+            multiDimensional: multiDimensional
         });
 
 
@@ -264,7 +275,7 @@ export default class VizG extends React.Component {
                                 curve={chart.mode}
                             />
                         );
-                    });
+                       });
                     break;
                 case 'bar':
                     if (chart.orientation === 'left') {
@@ -299,10 +310,10 @@ export default class VizG extends React.Component {
                     break;
                 case 'area':
                     Object.keys(chart.categories).forEach((name) => {
-                        console.info(name);
+                        // console.info(name);
                         legendItems.push({title: name, color: chart.categories[name]});
                         chartComponents.push(
-                            <AreaSeries
+                            <AreaMarkSeries
                                 key={`area-${chartIndex}-${chart.categories[name]}`}
                                 nullAccessor={(d) => d.y !== null}
                                 data={dataSets[name]}
@@ -323,7 +334,7 @@ export default class VizG extends React.Component {
                 <div style={{float: 'left', width: '80%', display: 'inline'}}>
                     <FlexibleWidthXYPlot
                         height={this.state.height}
-                        animation={false}
+                        animation={animation}
                         xType={metadata.types[metadata.names.indexOf(config.x)]}
                         stackBy={stacked ? 'y' : null}
 

@@ -9,7 +9,7 @@ import {
     LineSeries,
     Crosshair
 } from 'react-vis';
-// import AreaMarkSeries from 'AreaMarkSeries';
+import AreaMarkSeries from './AreaMarkSeries';
 const DATA = [
     [
         {x: 1, y: 10},
@@ -63,9 +63,11 @@ export default class DynamicCrosshair extends React.Component {
                 <HorizontalGridLines />
                 <XAxis />
                 <YAxis />
-                {/*<AreaMarkSeries*/}
-                    {/*onNearestX={this._onNearestX}*/}
-                    {/*data={DATA[0]}/>*/}
+                <AreaMarkSeries
+                    onNearestX={this._onNearestX}
+                    data={DATA[0]}
+                    color="red"
+                />
                 <LineSeries
                     data={DATA[1]}/>
                 <Crosshair values={this.state.crosshairValues}/>

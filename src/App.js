@@ -36,7 +36,7 @@ export default class App extends React.Component {
         maxLength: 7,
         width: 700,
         height: 450,
-        animation:true
+        // animation:true
     };
 
     singleAreaChartConfig = {
@@ -45,7 +45,7 @@ export default class App extends React.Component {
         maxLength: 7,
         width: 700,
         height: 450,
-        animation:true
+        // animation:true
     };
 
     barChartConfig = {
@@ -54,7 +54,7 @@ export default class App extends React.Component {
         maxLength: 7,
         width: 700,
         height: 450,
-        animation:true
+        // animation:true
     };
 
     /*****************[END] Chart Config******************/
@@ -63,19 +63,21 @@ export default class App extends React.Component {
 
     componentDidMount() {
         setInterval(() => {
+            let randomY=Math.random()*100;
             this.setState({
                 data: [
-                    [this.state.timer, this.state.timer===20? null :Math.random() * 100, 10, this.state.timer%2? 'piston2' :'piston'],
-                    [this.state.timer, Math.random() * 100, 10, 'rotary']
+                    [this.state.timer, this.state.timer===20? null :randomY*2, 10, 'piston'],
+                    [this.state.timer, Math.random() * randomY*3, 10, 'rotary'],
+
                 ],
                 data2: [
 
-                    [this.state.timer, Math.random() * 100, Math.random()*100, 'rotary']
+                    [this.state.timer, Math.random() * 100, randomY, 'rotary']
                 ],
                 timer: this.state.timer + 1
             });
 
-        }, 2000);
+        }, 500);
     }
 
     //<ChartWrapper config={this.areaChartConfig} metadata={this.metadata} data={this.state.data}/>

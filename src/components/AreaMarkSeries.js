@@ -36,27 +36,35 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import {
+    AbstractSeries,
+    MarkSeries,
+    AreaSeries
+} from 'react-vis';
 
-import {AbstractSeries,AreaSeries,MarkSeries} from 'react-vis';
-
-// import LineSeries from './line-series';
-// import MarkSeries from './mark-series';
 
 const propTypes = {
     ...AreaSeries.propTypes,
-    lineStyle: PropTypes.object,
+    areaStyle: PropTypes.object,
     markStyle: PropTypes.object
+
 };
 
-class AreaMarkSeries extends AbstractSeries {
 
-    static get defaultProps() {
-        return {
-            ...AreaSeries.defaultProps,
-            lineStyle: {},
-            markStyle: {}
-        };
-    }
+
+
+/**
+ *will return default props for the series
+ */
+function getDefaultProps() {
+    return {
+        ...AreaSeries.defaultProps,
+        areaStyle: {},
+        markStyle: {}
+    };
+}
+
+class AreaMarkSeries extends AbstractSeries {
 
     render() {
         const {lineStyle, markStyle, style} = this.props;
@@ -67,9 +75,11 @@ class AreaMarkSeries extends AbstractSeries {
             </g>
         );
     }
+
 }
 
-AreaMarkSeries.displayName = 'LineMarkSeries';
+AreaMarkSeries.displayName = 'AreaMarkSeries';
+AreaMarkSeries.defaultProps = getDefaultProps();
 AreaMarkSeries.propTypes = propTypes;
 
 export default AreaMarkSeries;
