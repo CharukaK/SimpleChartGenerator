@@ -114,11 +114,12 @@ export default class VizG extends React.Component {
 
 
             config.charts.map((chart,chartIndex)=>{
+                let colorScale=chart.colorScale || 'category10';
                 let yIndex= metadata.names.indexOf(chart.y);
                 let x0index=metadata.names.indexOf(chart.x0);
                 let categoricalIndex=metadata.names.indexOf(chart.color) || -1;
                 let dataSetName='';
-                let maxLength=chart.maxLength;
+
                 if(!initialized){
                     chartArray.push({
                         type:chart.type,
@@ -144,6 +145,10 @@ export default class VizG extends React.Component {
                         dataSets[dataSetName]=[];
                     }
 
+                    // console.info(config.maxLength);
+                    if(dataSets[dataSetName].length>config.maxLength){
+                        dataSets[dataSetName].shift();
+                    }
 
                     if(chart.type==='bar'&&chart.orientation==='left'){
                         dataSets[dataSetName].push({x:datum[yIndex],y:datum[xIndex],y0:datum[x0index]});
@@ -152,10 +157,27 @@ export default class VizG extends React.Component {
                         dataSets[dataSetName].push({x:datum[xIndex],y:datum[yIndex],x0:datum[x0index]});
                     }
 
-                    if(dataSets[dataSetName].length>maxLength){
-                        dataSets[dataSetName].shift();
-                    }
 
+
+                    if(!chartArray[chartIndex].categories.hasOwnProperty(dataSetName)){
+                        if(!chart.fill){
+                            if(chart.colorDomain){
+                                let colorId=chart.colorDomain.indexOf(datum[categoricalIndex]);
+
+                                if(colorId>-1){
+                                    // chartArray.categories[dataSetName]=Array.isArray(colorScale)?
+
+                                }
+                            }
+
+
+
+
+
+                        }else {
+                            chartArray[chartIndex].categories[dataSetName]=chart.fill;
+                        }
+                    }
 
 
 
