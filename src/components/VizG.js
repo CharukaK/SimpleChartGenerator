@@ -63,6 +63,7 @@ import AreaMarkSeries from './AreaMarkSeries';
 import * as d3 from 'd3';
 import '../../node_modules/react-vis/dist/style.css';
 import PropTypes from 'prop-types';
+import {scaleLinear} from 'd3-scale';
 
 
 export default class VizG extends React.Component {
@@ -186,14 +187,14 @@ export default class VizG extends React.Component {
 
                                 if (colorId > -1) {
                                     chartArray[chartIndex].categories[dataSetName] = Array.isArray(colorScale) ?
-                                        colorScale[colorId] : VizG._getColorFromSchema(colorScale, colorId);
+                                        colorScale[colorId] : VizG._getColorFromSchemaOrdinal(colorScale, colorId);
                                 }
                             }
 
                             if (!chartArray[chartIndex].categories[dataSetName]) {
                                 chartArray[chartIndex].categories[dataSetName] = Array.isArray(colorScale) ?
                                     colorScale[chartArray[chartIndex].colorIndex] :
-                                    VizG._getColorFromSchema(colorScale, chartArray[chartIndex].colorIndex++);
+                                    VizG._getColorFromSchemaOrdinal(colorScale, chartArray[chartIndex].colorIndex++);
                             }
 
 
@@ -214,6 +215,10 @@ export default class VizG extends React.Component {
 
         } else {
             //ToDo: scatter plots and pie charts
+            if(config.type==='scatter'){
+
+            }
+
         }
 
         initialized = true;
@@ -248,7 +253,7 @@ export default class VizG extends React.Component {
      * @param index Index of the color in the array
      * @private
      */
-    static _getColorFromSchema(schema, index) {
+    static _getColorFromSchemaOrdinal(schema, index) {
         let length = 20, schemeCat;
 
         switch (schema) {
@@ -268,7 +273,20 @@ export default class VizG extends React.Component {
 
         }
 
-        return d3.scaleOrdinal().range(schemeCat).domain(Array.apply(null, {length: length}).map(Number.call, Number))(index);
+        return d3.scaleOrdinal()
+            .range(schemeCat)
+            .domain(Array.apply(null, {length: length}).map(Number.call, Number))(index);
+    }
+
+    /**
+     * get the color if the color type of chart is linear
+     * @param domain domain of values the colors should be distributed
+     * @param range colorSchema
+     * @param value Value the color is needed
+     * @private
+     */
+    _getFromLinearColorScale(domain,range,value){
+        return scaleLinear().domain(domain).range(range);
     }
 
     render() {

@@ -10,6 +10,7 @@ import {
     Crosshair
 } from 'react-vis';
 import AreaMarkSeries from './AreaMarkSeries';
+import {scaleLinear} from 'd3-scale';
 const DATA = [
     [
         {x: 1, y: 10},
@@ -22,7 +23,7 @@ const DATA = [
         {x: 3, y: 15}
     ]
 ];
-
+import * as d3 from 'd3';
 export default class DynamicCrosshair extends React.Component {
     constructor(props) {
         super(props);
@@ -45,6 +46,10 @@ export default class DynamicCrosshair extends React.Component {
         console.info(value,info);
     }
 
+
+    _getFromLinearColorScale(domain,range,value){
+        return d3.scaleLinear().range(['1f77b4','ff7f0e']).domain([0,100])(value);
+    }
     /**
      * Event handler for onMouseLeave.
      * @private
@@ -66,7 +71,7 @@ export default class DynamicCrosshair extends React.Component {
                 <AreaMarkSeries
                     onNearestX={this._onNearestX}
                     data={DATA[0]}
-                    color="red"
+                    color={this._getFromLinearColorScale('sd','sd',4000000)}
                 />
                 <LineSeries
                     data={DATA[1]}/>

@@ -1,14 +1,6 @@
 import React from 'react';
 
-import Test from './components/Test';
-import {Row} from "./components/util";
-import AppBar from 'material-ui/AppBar';
-import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import LineChartConfigSample from "./Samples/LineChartConfigSample";
-import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
-import FlatButton from 'material-ui/FlatButton';
+import {Row} from './components/util';
 import VizG from './components/VizG';
 
 
@@ -57,6 +49,20 @@ export default class App extends React.Component {
         // animation:true
     };
 
+    scatterPlotConfig={
+        type: 'scatter',
+        charts : [
+            {type: 'scatter',
+                x : 'rpm',
+                y : 'torque',
+                color: 'horsepower',
+                size : 'weight',
+                maxLength: 30}],
+
+        width: 400,
+        height: 200
+    };
+
     /*****************[END] Chart Config******************/
 
 
@@ -86,15 +92,22 @@ export default class App extends React.Component {
             <div>
                 <center><h1>Charting Config Samples</h1></center>
                 <Row title="Line Series" chart="line" media={true} actionBar={true}>
-                    <VizG config={this.lineChartConfig} metadata={this.metadata} data={this.state.data}/>
-                    <br/><br/>
+                    <div>
+                        <VizG config={this.lineChartConfig} metadata={this.metadata} data={this.state.data}/>
+                    </div>
+
+                    <br/>
                 </Row>
                 <Row title="Bar Series" chart="bar" media={true} actionBar={true}>
-                    <VizG config={this.barChartConfig} metadata={this.metadata} data={this.state.data}/>
+                    <div>
+                        <VizG config={this.barChartConfig} metadata={this.metadata} data={this.state.data}/>
+                    </div>
                     <br/><br/>
                 </Row>
                 <Row title="Area Series" chart="area" media={true} actionBar={true}>
-                    <VizG config={this.singleAreaChartConfig} metadata={this.metadata} data={this.state.data2}/>
+                    <div>
+                        <VizG config={this.singleAreaChartConfig} metadata={this.metadata} data={this.state.data2}/>
+                    </div>
                     <br/><br/>
                 </Row>
 

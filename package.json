@@ -25,6 +25,7 @@
   "homepage": "https://github.com/CharukaK/SimpleChartGenerator#readme",
   "dependencies": {
     "d3": "^4.10.2",
+    "d3-scale": "^1.0.6",
     "material-ui": "^0.19.1",
     "prop-types": "^15.5.10",
     "react": "^15.6.1",
