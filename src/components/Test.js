@@ -7,7 +7,10 @@ import {
     VerticalGridLines,
     HorizontalGridLines,
     LineSeries,
-    Crosshair
+    Crosshair,
+    MarkSeries,
+    VerticalBarSeries,
+    HorizontalBarSeries
 } from 'react-vis';
 import AreaMarkSeries from './AreaMarkSeries';
 import {scaleLinear} from 'd3-scale';
@@ -61,21 +64,41 @@ export default class DynamicCrosshair extends React.Component {
     render() {
         return (
             <XYPlot
-                onMouseLeave={this._onMouseLeave}
                 width={300}
-                height={300}>
+                height={300}
+                stackBy={'y'}
+                colorRange={['#3944ff','#ff4933','#1bff31']}
+                colorType='category'
+
+            >
                 <VerticalGridLines />
                 <HorizontalGridLines />
                 <XAxis />
                 <YAxis />
-                <AreaMarkSeries
-                    onNearestX={this._onNearestX}
-                    data={DATA[0]}
-                    color={this._getFromLinearColorScale('sd','sd',4000000)}
-                />
-                <LineSeries
-                    data={DATA[1]}/>
-                <Crosshair values={this.state.crosshairValues}/>
+                <VerticalBarSeries
+                    className="mark-series-example"
+                    strokeWidth={2}
+                    opacity="0.8"
+
+                    data={[
+                        {x: 1, y: 10, color:'piston'},
+                        {x: 1.7, y: 12,color:'rotary'},
+                        {x: 2, y: 5,  color:'piston'},
+                        {x: 2, y: 15, color:'rotary'},
+                        {x: 2.5, y: 7, color:'piston2'}
+                    ]}/>
+                <VerticalBarSeries
+                    className="mark-series-example"
+                    strokeWidth={2}
+                    opacity="0.8"
+
+                    data={[
+                        {x: 1, y: 10, color:'piston'},
+                        {x: 1.7, y: 12,color:'rotary'},
+                        {x: 2, y: 5,  color:'piston'},
+                        {x: 2, y: 15, color:'rotary'},
+                        {x: 2.5, y: 7, color:'piston2'}
+                    ]}/>
             </XYPlot>
         );
     }

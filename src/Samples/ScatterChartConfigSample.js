@@ -5,39 +5,38 @@ import VizG from '../components/VizG';
 // import t from 'GridTest';
 
 
-export default class LineChartConfigSample extends React.Component {
+export default class ScatterChartConfigSample extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: [[1, 10, 23, 'piston'], [1, 20, 34, 'rotary']],
-            data2: [[1, 10, 23, 'piston']],
+            scatterPlot: [
+                [1, 4, 3.5, 79.91, 0.8, 0.03, 'piston'],
+                [2, 3, 3.5, 79.65, 1.3, 0.06, 'rotary']],
             timer: 0
         };
     }
 
     metadata = {
-        names: ['rpm', 'torque', 'horsepower', 'EngineType'],
-        types: ['linear', 'linear', 'linear', 'ordinal']
+        names: ['rpm', 'torque', 'horsepower', 'weight', 'EngineType'],
+        types: ['linear', 'linear', 'linear', 'linear', 'ordinal']
     };
 
 
     /*****************[START] Chart Config******************/
-    lineChartConfig = {
-        x: 'rpm',
-        charts: [{type: 'line', y: 'torque', color: 'EngineType', colorDomain: ['', '', 'piston']}],
-        maxLength: 7,
-        width: 700,
-        height: 450,
-        // animation: true
-    };
+    scatterPlotConfig = {
+        type: 'scatter',
+        charts: [
+            {
+                type: 'scatter',
+                x: 'rpm',
+                y: 'torque',
+                color: 'horsepower',
+                size: 'weight',
+                maxLength: 30
+            }],
 
-    singleLineChartConfig = {
-        x: 'rpm',
-        charts: [{type: 'line', y: 'horsepower', fill: '#2ca02c'}, {type: 'line', y: 'torque', fill: '#ff7f0e'}],
-        maxLength: 7,
-        width: 700,
-        height: 450,
-        // animation: true
+        width: 400,
+        height: 450
     };
 
     /*****************[END] Chart Config******************/
@@ -46,14 +45,7 @@ export default class LineChartConfigSample extends React.Component {
     componentDidMount() {
         setInterval(() => {
             this.setState({
-                data: [
-                    [this.state.timer, this.state.timer === 20 ? null : Math.random() * 100, 10, 'piston'],
-                    [this.state.timer, Math.random() * 100, 10, 'rotary']
-                ],
-                data2: [
-
-                    [this.state.timer, Math.random() * 100, Math.random() * 100, 'rotary']
-                ],
+                scatterPlot:[[this.state.timer,Math.random()*100,Math.random()*10,Math.random()*100,'piston'],[this.state.timer,Math.random()*100,Math.random()*10,Math.random()*100,'rotary']],
                 timer: this.state.timer + 1
             });
 
@@ -64,41 +56,29 @@ export default class LineChartConfigSample extends React.Component {
     render() {
         return (
             <div>
-                <center><h1>Line Chart Config Samples</h1></center>
+                <center><h1>Scatter Config Samples</h1></center>
                 <Row title="Group MultiLine Chart Sample" chart="line" media={true} actionBar={false}>
-                    <VizG config={this.lineChartConfig} metadata={this.metadata} data={this.state.data}/>
+                    <VizG config={this.scatterPlotConfig} metadata={this.metadata} data={this.state.scatterPlot}/>
                     <br/>
                     <div>
                        <pre>
                            {'{\n' +
-                           '\tx: \'rpm\',\n' +
-                           '\tcharts: [\n\t    { type: \'line\', y: \'torque\', color: \'EngineType\',colorDomain:[\'\',\'\',\'piston\']}\n\t],\n' +
-                           '\tmaxLength: 7,\n' +
-                           '\twidth: 700,\n' +
-                           '\theight: 450,\n' +
-                           '\tanimation:true\n}'
-
-                           }
+                           '        type: "scatter",\n' +
+                           '        charts : [\n' +
+                           '            {type: "scatter",\n' +
+                           '             x : "rpm",  \n' +
+                           '             y : "torque",\n' +
+                           '             color: "horsepower", \n' +
+                           '             size : "weight", \n' +
+                           '             maxLength: 30}], \n' +
+                           '             \n' +
+                           '        width: 400,\n' +
+                           '        height: 200\n' +
+                           '}'}
                        </pre>
                     </div>
                 </Row>
-                <Row title="Multi Line Chart Sample" chart="line" media={true} actionBar={false}>
-                    <VizG config={this.singleLineChartConfig} metadata={this.metadata} data={this.state.data2}/>
-                    <br/>
-                    <div>
-                       <pre>
-                           {'{\n' +
-                           '\tx: \'rpm\',\n' +
-                           '\tcharts: [\n\t    { type: \'line\', y: \'horsepower\', fill:\'#2ca02c\'}\n\t    { type: \'line\', y: \'torque\', fill:\'#ff7f0e\'}\n\t],\n' +
-                           '\tmaxLength: 7,\n' +
-                           '\twidth: 700,\n' +
-                           '\theight: 450,\n' +
-                           '\tanimation:true\n}'
 
-                           }
-                       </pre>
-                    </div>
-                </Row>
 
 
                 <Row title="Sample Data Set" chart="line">
@@ -109,7 +89,7 @@ export default class LineChartConfigSample extends React.Component {
                                '\tnames: [\'rpm\', \'torque\', \'horsepower\', \'EngineType\'],\n' +
                                '\ttypes: [\'linear\', \'linear\', \'linear\', \'ordinal\']\n' +
                                '};\n' +
-                               '\ndata = [[1, 10, 23, \'piston\'], [1, 20, 34, \'rotary\']];'
+                               '\ndata = [[1, 10, 2, 12, \'piston\'], [1, 20, 4, 34, \'rotary\']];'
                            }
                        </pre>
                     </div>
@@ -126,9 +106,9 @@ export default class LineChartConfigSample extends React.Component {
                                    <th>Description</th>
                                </tr>
                                <tr>
-                                   <td>x</td>
+                                   <td>type</td>
                                    <td>string</td>
-                                   <td>independent axis</td>
+                                   <td>type of plot</td>
                                </tr>
                                <tr>
                                    <td>charts</td>
@@ -138,7 +118,7 @@ export default class LineChartConfigSample extends React.Component {
                                <tr>
                                    <td>maxLength</td>
                                    <td>int</td>
-                                   <td>Maximum length of the dataSet displayed</td>
+                                   <td>Maximum length of the chart data table</td>
                                </tr>
                                <tr>
                                    <td>height</td>
@@ -157,37 +137,35 @@ export default class LineChartConfigSample extends React.Component {
                                    <th>Type</th>
                                    <th>Description</th>
                                </tr>
+
                                <tr>
-                                   <td>type</td>
+                                   <td>x</td>
                                    <td>string</td>
-                                   <td>type of the chart required (line)</td>
+                                   <td>attribute name of the x axis</td>
                                </tr>
                                <tr>
                                    <td>y</td>
                                    <td>string</td>
-                                   <td>dependent axis</td>
+                                   <td>attribute name of the y axis</td>
+                               </tr>
+                               <tr>
+                                   <td>size</td>
+                                   <td>int</td>
+                                   <td>Name of the size attribute of the Mark</td>
                                </tr>
                                <tr>
                                    <td>color</td>
                                    <td>string</td>
                                    <td>attribute name for color categorization</td>
                                </tr>
-                               <tr>
-                                   <td>mode</td>
-                                   <td>string</td>
-                                   <td>type of the line curve (see <a href="https://github.com/d3/d3-shape#curves">d3-documentation</a> for possible curve types)</td>
-                               </tr>
+
                                <tr>
                                    <td>colorScale</td>
                                    <td>string | Array(string)</td>
                                    <td>color set to use in the charts for predefined colors check <a
                                        href="https://github.com/d3/d3-3.x-api-reference/blob/master/Ordinal-Scales.md#categorical-colors">d3-documentation</a></td>
                                </tr>
-                               <tr>
-                                   <td>colorDomain</td>
-                                   <td>Array(string)</td>
-                                   <td>if a certain category is required to be plotted in a certain color</td>
-                               </tr>
+
                                </tbody>
                            </table>
                        </pre>
