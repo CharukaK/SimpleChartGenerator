@@ -5,6 +5,7 @@ import Test from './components/Test';
 import LineChart from './Samples/LineChartConfigSample';
 import BarChart from './Samples/BarChartConfigSample';
 import AreaChart from './Samples/AreaChartConfigSample';
+import ScatterPlot from './Samples/ScatterChartConfigSample';
 import {
     BrowserRouter as Router,
     Route,
@@ -20,6 +21,7 @@ ReactDOM.render(
             <Route exact path="/line-charts" component={LineChart}/>
             <Route exact path="/bar-charts" component={BarChart}/>
             <Route exact path="/area-charts/" component={AreaChart}/>
+            <Route exact path='/scatter-charts' component={ScatterPlot}/>
         </div>
     </Router>, document.getElementById('root'));
 

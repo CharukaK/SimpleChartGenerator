@@ -82,7 +82,10 @@ export default class VizG extends React.Component {
             animation: props.config.animation || false,
             multiDimensional: false,
             crosshairValues: [],
-            hintValue: null
+            hintValue: null,
+            colorRange: null,
+            colorType: null,
+            plotType: 'general'
         };
 
         this._sortAndPopulateDataSet = this._sortAndPopulateDataSet.bind(this);
@@ -115,6 +118,15 @@ export default class VizG extends React.Component {
         });
     }
 
+    /**
+     * Gives a range of colors that can be used in the scatter plot color range
+     * @param scheme color scheme given as a string
+     * @private
+     */
+    _getColorRangeArray(scheme) {
+        return Array.apply(null, {length: scheme.substring(8, 10)}).map(Number.call, Number).map((num) => VizG._getColorFromSchemaOrdinal(scheme,num));
+    }
+
 
     /**
      * will sort and populate the dataSet that's defined in the state according to the given config
@@ -123,7 +135,7 @@ export default class VizG extends React.Component {
      */
     _sortAndPopulateDataSet(props) {
         let {metadata, config, data} = props;
-        let {dataSets, chartArray, initialized, orientation, stacked, multiDimensional} = this.state;
+        let {dataSets, chartArray, initialized, orientation, stacked, multiDimensional, colorRange, colorType, plotType} = this.state;
 
         //if x is defined it could be either a Line,Bar, Area or Geographical chart
         if (config.x) {
@@ -148,8 +160,8 @@ export default class VizG extends React.Component {
                         categories: {},
                         mode: chart.mode || null,
                         colorIndex: 0,
-                        orientation: chart.orientation || 'bottom'
-
+                        orientation: chart.orientation || 'bottom',
+                        categorical: false
                     });
                 }
 
@@ -158,6 +170,7 @@ export default class VizG extends React.Component {
 
                     if (categoricalIndex > -1) {
                         dataSetName = datum[categoricalIndex];
+                        chartArray[chartIndex].categorical = true;
                     } else {
                         dataSetName = metadata.names[yIndex];
                         multiDimensional = true;
@@ -215,8 +228,52 @@ export default class VizG extends React.Component {
 
         } else {
             //ToDo: scatter plots and pie charts
-            if(config.type==='scatter'){
+            if (config.type === 'scatter') {
+                plotType = 'scatter';
+                if (!initialized) {
+                    chartArray.push({
+                        type: 'scatter',
+                        dataSetName: ''
+                    });
+                }
+                config.charts.map((chart, chartIndex) => {
+                    let colorScale = chart.colorScale || 'category10';
+                    let xIndex = metadata.names.indexOf(chart.x);
+                    let yIndex = metadata.names.indexOf(chart.y);
+                    let colorIndex = metadata.names.indexOf(chart.color);
+                    let sizeIndex = metadata.names.indexOf(chart.size);
 
+
+                    colorRange = Array.isArray(colorScale) ?
+                        colorScale : this._getColorRangeArray(colorScale);
+                    colorType = (metadata.types[colorIndex] === 'linear' ? 'linear' : 'category');
+
+                    let dataSetName = 'scatterPlot' + chartIndex;
+                    chartArray[chartIndex].dataSetName = dataSetName;
+                    data.map((datum, datIndex) => {
+                        if (!dataSets.hasOwnProperty(dataSetName)) {
+                            dataSets[dataSetName] = [];
+                        }
+
+
+                        if(dataSets[dataSetName].length>chart.maxLength){
+                            dataSets[dataSetName].shift();
+                        }
+
+
+                        dataSets[dataSetName].push(
+                            {
+                                x: datum[xIndex],
+                                y: datum[yIndex],
+                                color: datum[colorIndex],
+                                size: datum[sizeIndex]
+                            }
+                        );
+
+
+                    });
+
+                });
             }
 
         }
@@ -230,7 +287,10 @@ export default class VizG extends React.Component {
             initialized: initialized,
             orientation: orientation,
             stacked: stacked,
-            multiDimensional: multiDimensional
+            multiDimensional: multiDimensional,
+            colorRange: colorRange,
+            colorType: colorType,
+            plotType: plotType
         });
 
 
@@ -285,176 +345,217 @@ export default class VizG extends React.Component {
      * @param value Value the color is needed
      * @private
      */
-    _getFromLinearColorScale(domain,range,value){
+    _getFromLinearColorScale(domain, range, value) {
         return scaleLinear().domain(domain).range(range);
     }
 
     render() {
         let {metadata, config} = this.props;
-        let {chartArray, dataSets, orientation, stacked, animation,multiDimensional} = this.state;
+        let {chartArray, dataSets, orientation, stacked, animation, multiDimensional, colorRange, colorType, plotType} = this.state;
         let chartComponents = [];
         let legendItems = [];
         let xIndex = metadata.names.indexOf(config.x);
 
-        chartArray.map((chart, chartIndex) => {
-            switch (chart.type) {
-                case 'line':
-                    Object.keys(chart.categories).forEach((name) => {
-                        legendItems.push({title: name, color: chart.categories[name]});
-                        chartComponents.push(
-                            <LineMarkSeries
-                                key={`line-${chartIndex}-${chart.categories[name]}`}
-                                nullAccessor={(d) => d.y !== null}
-                                data={dataSets[name]}
-                                color={chart.categories[name]}
-                                opacity={0.7}
-                                curve={chart.mode}
-                                onValueMouseOver={(value, info) => {
-
-                                    this._onValueMouseOver(value, info.index, name);
-                                }}
-                                onValueMouseOut={this._onPlaneMouseOut}
-                            />
-                        );
-                    });
-                    break;
-                case 'bar':
-                    if (chart.orientation === 'left') {
+        if (plotType === 'general') {
+            chartArray.map((chart, chartIndex) => {
+                switch (chart.type) {
+                    case 'line':
                         Object.keys(chart.categories).forEach((name) => {
                             legendItems.push({title: name, color: chart.categories[name]});
-                            if (metadata.types[xIndex] !== 'time') {
-                                chartComponents.push(
-                                    <HorizontalBarSeries
-                                        key={`bar-${chartIndex}-${chart.categories[name]}`}
+                            chartComponents.push(
+                                <LineMarkSeries
+                                    key={`line-${chartIndex}-${chart.categories[name]}`}
+                                    nullAccessor={(d) => d.y !== null}
+                                    data={dataSets[name]}
+                                    color={chart.categories[name]}
+                                    opacity={0.9}
+                                    curve={chart.mode}
+                                    onValueMouseOver={(value, info) => {
 
-                                        data={dataSets[name].filter((d) => d.y !== null)}
-                                        color={chart.categories[name]}
-                                        opacity={0.7}
-                                        curve={chart.mode}
-                                        onValueMouseOver={(value, info) => {
-                                            this._onValueMouseOver(value, info.index, name);
-                                        }}
-                                        onValueMouseOut={this._onPlaneMouseOut}
-                                    />
-                                );
-                            } else {
-                                chartComponents.push(
-                                    <HorizontalRectSeries
-                                        key={`bar-${chartIndex}-${chart.categories[name]}`}
-
-                                        data={dataSets[name].filter((d) => d.y !== null)}
-                                        color={chart.categories[name]}
-                                        opacity={0.7}
-                                        curve={chart.mode}
-                                        onValueMouseOver={(value, info) => {
-                                            this._onValueMouseOver(value, info.index, name);
-                                        }}
-                                        onValueMouseOut={this._onPlaneMouseOut}
-                                    />
-                                );
-                            }
+                                        this._onValueMouseOver(value, info.index, name);
+                                    }}
+                                    onValueMouseOut={this._onPlaneMouseOut}
+                                />
+                            );
                         });
-                    } else {
+                        break;
+                    case 'bar':
+                        if (chart.orientation === 'left') {
+                            Object.keys(chart.categories).forEach((name) => {
+                                legendItems.push({title: name, color: chart.categories[name]});
+                                if (metadata.types[xIndex] !== 'time') {
+                                    chartComponents.push(
+                                        <HorizontalBarSeries
+                                            key={`bar-${chartIndex}-${chart.categories[name]}`}
+
+                                            data={dataSets[name].filter((d) => d.y !== null)}
+                                            color={chart.categories[name]}
+                                            opacity={0.9}
+                                            curve={chart.mode}
+                                            onValueMouseOver={(value, info) => {
+                                                this._onValueMouseOver(value, info.index, name);
+                                            }}
+                                            onValueMouseOut={this._onPlaneMouseOut}
+                                        />
+                                    );
+                                } else {
+                                    chartComponents.push(
+                                        <HorizontalRectSeries
+                                            key={`bar-${chartIndex}-${chart.categories[name]}`}
+
+                                            data={dataSets[name].filter((d) => d.y !== null)}
+                                            color={chart.categories[name]}
+                                            opacity={0.9}
+                                            curve={chart.mode}
+                                            onValueMouseOver={(value, info) => {
+                                                this._onValueMouseOver(value, info.index, name);
+                                            }}
+                                            onValueMouseOut={this._onPlaneMouseOut}
+                                        />
+                                    );
+                                }
+                            });
+                        } else {
+                            Object.keys(chart.categories).forEach((name) => {
+                                legendItems.push({title: name, color: chart.categories[name]});
+                                if (metadata.types[xIndex] !== 'time') {
+                                    chartComponents.push(
+                                        <VerticalBarSeries
+                                            key={`bar-${chartIndex}-${chart.categories[name]}`}
+                                            data={dataSets[name].filter((d) => d.y !== null)}
+                                            color={chart.categories[name]}
+                                            opacity={0.9}
+                                            curve={chart.mode}
+                                            onValueMouseOver={(value, info) => {
+                                                this._onValueMouseOver(value, info.index, name);
+                                            }}
+
+                                            onValueMouseOut={this._onPlaneMouseOut}
+                                        />
+                                    );
+                                } else {
+                                    chartComponents.push(
+                                        <VerticalRectSeries
+                                            key={`bar-${chartIndex}-${chart.categories[name]}`}
+
+                                            data={dataSets[name].filter((d) => d.y !== null)}
+                                            color={chart.categories[name]}
+                                            opacity={0.9}
+                                            curve={chart.mode}
+                                            onValueMouseOver={(value, info) => {
+                                                this._onValueMouseOver(value, info.index, name);
+                                            }}
+
+                                            onValueMouseOut={this._onPlaneMouseOut}
+                                        />
+                                    );
+                                }
+                            });
+                        }
+                        break;
+                    case 'area':
                         Object.keys(chart.categories).forEach((name) => {
+                            // console.info(name);
                             legendItems.push({title: name, color: chart.categories[name]});
-                            if (metadata.types[xIndex] !== 'time') {
-                                chartComponents.push(
-                                    <VerticalBarSeries
-                                        key={`bar-${chartIndex}-${chart.categories[name]}`}
-
-                                        data={dataSets[name].filter((d) => d.y !== null)}
-                                        color={chart.categories[name]}
-                                        opacity={0.7}
-                                        curve={chart.mode}
-                                        onValueMouseOver={(value, info) => {
-                                            this._onValueMouseOver(value, info.index, name);
-                                        }}
-
-                                        onValueMouseOut={this._onPlaneMouseOut}
-                                    />
-                                );
-                            } else {
-                                chartComponents.push(
-                                    <VerticalRectSeries
-                                        key={`bar-${chartIndex}-${chart.categories[name]}`}
-
-                                        data={dataSets[name].filter((d) => d.y !== null)}
-                                        color={chart.categories[name]}
-                                        opacity={0.7}
-                                        curve={chart.mode}
-                                        onValueMouseOver={(value, info) => {
-                                            this._onValueMouseOver(value, info.index, name);
-                                        }}
-
-                                        onValueMouseOut={this._onPlaneMouseOut}
-                                    />
-                                );
-                            }
+                            chartComponents.push(
+                                <AreaMarkSeries
+                                    key={`area-${chartIndex}-${chart.categories[name]}`}
+                                    nullAccessor={(d) => d.y !== null}
+                                    data={dataSets[name]}
+                                    color={chart.categories[name]}
+                                    opacity={0.9}
+                                    curve={chart.mode}
+                                    onValueMouseOver={(value, info) => {
+                                        this._onValueMouseOver(value, info.index, name);
+                                    }}
+                                    onValueMouseOut={this._onPlaneMouseOut}
+                                />
+                            );
                         });
-                    }
-                    break;
-                case 'area':
-                    Object.keys(chart.categories).forEach((name) => {
-                        // console.info(name);
-                        legendItems.push({title: name, color: chart.categories[name]});
-                        chartComponents.push(
-                            <AreaMarkSeries
-                                key={`area-${chartIndex}-${chart.categories[name]}`}
-                                nullAccessor={(d) => d.y !== null}
-                                data={dataSets[name]}
-                                color={chart.categories[name]}
-                                opacity={0.7}
-                                curve={chart.mode}
-                                onValueMouseOver={(value, info) => {
-                                    this._onValueMouseOver(value, info.index, name);
-                                }}
-                                onValueMouseOut={this._onPlaneMouseOut}
-                            />
-                        );
-                    });
-                    break;
+                        break;
 
 
-            }
-        });
+                }
+            });
+        } else if (plotType === 'scatter') {
+
+            // console.info(colorType);
+            chartArray.map((chart, chartIndex) => {
+                chartComponents.push(
+                    <MarkSeries
+                        key={`scatter-${chartIndex}-${chart.dataSetName}`}
+                        sizeRange={[5, 20]}
+                        data={dataSets[chart.dataSetName]}
+                        opacity={0.8}
+                    />
+                );
+            });
+        }
 
         return (
             <div>
-                <div style={{float: 'left', width: '87%', display: 'inline'}}>
-                    <FlexibleWidthXYPlot
-                        height={this.state.height}
-                        animation={animation}
-                        xType={metadata.types[metadata.names.indexOf(config.x)]}
-                        stackBy={stacked ? 'y' : null}
-                        margin={{left: 100}}
-                        onMouseLeave={this._onPlaneMouseOut}
+                {plotType === 'general' ?
+                    <div>
 
-                    >
+                        <div style={{float: 'left', width: '87%', display: 'inline'}}>
+                            <FlexibleWidthXYPlot
+                                height={this.state.height}
+                                animation={animation}
+                                xType={metadata.types[metadata.names.indexOf(config.x)]}
+                                stackBy={stacked ? 'y' : null}
+                                margin={{left: 100}}
+                                onMouseLeave={this._onPlaneMouseOut}
 
-                        <HorizontalGridLines/>
-                        <VerticalGridLines/>
+                            >
 
-                        {chartComponents}
-                        <XAxis title={orientation === 'left' ? config.charts[0].y : config.x}/>
-                        <YAxis title={multiDimensional?'':(orientation === 'left' ? config.x : config.charts[0].y)}/>
-                        <Crosshair values={this.state.crosshairValues}/>
+                                <HorizontalGridLines/>
+                                <VerticalGridLines/>
 
-                        {
-                            this.state.hintValue ?
-                                <Hint value={this.state.hintValue}/> :
-                                null
-                        }
-                    </FlexibleWidthXYPlot>
-                </div>
-                <div style={{float: 'right', width: '13%', display: 'inline'}}>
-                    <DiscreteColorLegend
-                        width={100}
-                        height={this.state.height}
-                        items={legendItems}
-                    />
-                </div>
+                                {chartComponents}
+                                <XAxis title={orientation === 'left' ? config.charts[0].y : config.x}/>
+                                <YAxis
+                                    title={multiDimensional ? '' : (orientation === 'left' ? config.x : config.charts[0].y)}/>
+                                <Crosshair values={this.state.crosshairValues}/>
 
+                                {
+                                    this.state.hintValue ?
+                                        <Hint value={this.state.hintValue}/> :
+                                        null
+                                }
+                            </FlexibleWidthXYPlot>
+                        </div>
+                        <div style={{float: 'right', width: '13%', display: 'inline'}}>
+                            <DiscreteColorLegend
+                                width={100}
+                                height={this.state.height}
+                                items={legendItems}
+                            />
+                        </div>
+
+                    </div>:
+                    <div>
+                        <FlexibleWidthXYPlot
+                            height={this.state.height}
+                            animation={animation}
+                            margin={{left: 100}}
+                            colorRange={colorRange}
+                            colorType={colorType}
+
+                        >
+                            <XAxis/>
+                            <YAxis/>
+                            <HorizontalGridLines/>
+                            <VerticalGridLines/>
+                            {chartComponents}
+
+                        </FlexibleWidthXYPlot>
+                    </div>
+
+
+                }
             </div>
+
+
         );
     }
 }

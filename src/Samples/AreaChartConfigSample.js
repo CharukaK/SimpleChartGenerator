@@ -76,7 +76,7 @@ export default class AreaChartConfigSample extends React.Component {
     render() {
         return (
             <div>
-                <center><h1>Line Chart Config Samples</h1></center>
+                <center><h1>Area Chart Config Samples</h1></center>
                 <Row title="Group Area Chart Sample" chart="line" media={true} actionBar={false}>
                     <VizG config={this.areaChartConfig} metadata={this.metadata} data={this.state.data}/>
                     <br/>

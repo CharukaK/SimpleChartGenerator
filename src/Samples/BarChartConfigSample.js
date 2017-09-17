@@ -82,7 +82,7 @@ export default class BarChartConfigSample extends React.Component {
     render() {
         return (
             <div>
-                <center><h1>Line Chart Config Samples</h1></center>
+                <center><h1>Bar Chart Config Samples</h1></center>
                 <Row title="Group MultiLine Chart Sample" chart="line" media={true} actionBar={false}>
                     <VizG config={this.barChartConfig} metadata={this.metadata} data={this.state.data}/>
                     <br/>
