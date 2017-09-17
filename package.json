@@ -1,5 +1,5 @@
 {
-  "name": "simplechartgenerator",
+  "name": "vizgrammarforreact",
   "version": "1.0.0",
   "description": "A react component that generates svg charts based on a config given",
   "main": "index.js",

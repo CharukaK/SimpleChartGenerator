@@ -32,7 +32,8 @@ export default class ScatterChartConfigSample extends React.Component {
                 y: 'torque',
                 color: 'horsepower',
                 size: 'weight',
-                maxLength: 30
+                maxLength: 30,
+                colorScale:['#1f77b4','#ebff3b']
             }],
 
         width: 400,
