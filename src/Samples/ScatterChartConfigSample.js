@@ -34,6 +34,7 @@ export default class ScatterChartConfigSample extends React.Component {
                 size: 'weight',
                 maxLength: 30,
                 colorScale:['#1f77b4','#ebff3b']
+
             }],
 
         width: 400,
