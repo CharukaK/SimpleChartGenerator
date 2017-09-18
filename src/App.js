@@ -11,15 +11,15 @@ export default class App extends React.Component {
             data: [[1, 10, 23, 'piston'], [1, 20, 34, 'rotary']],
             data2: [[1, 10, 23, 'piston']],
             scatterPlot: [
-                [1, 41600, 3.5, 79.91, 0.8, 0.03, 'piston'],
-                [2, 37800, 3.5, 79.65, 1.3, 0.06, 'rotary']],
+                [1, 41600, 3.5, 79.91, 0.8, 'piston', 0.03],
+                [2, 37800, 3.5, 79.65, 1.3, 'rotary', 0.06]],
             timer: 0
         };
     }
 
     metadata = {
-        names: ['rpm', 'torque', 'horsepower','weight', 'EngineType'],
-        types: ['linear', 'linear', 'linear', 'linear','ordinal']
+        names: ['rpm', 'torque', 'horsepower','EngineType','weight' ],
+        types: ['linear', 'linear', 'linear', 'ordinal','linear']
     };
 
 
@@ -27,7 +27,7 @@ export default class App extends React.Component {
     lineChartConfig = {
         x: 'rpm',
         charts: [{type: 'line', y: 'torque', color: 'EngineType', colorDomain: ['', '', 'piston']}],
-        maxLength: 7,
+        maxLength: 30,
         width: 700,
         height: 450,
         // animation:true
@@ -36,7 +36,7 @@ export default class App extends React.Component {
     singleAreaChartConfig = {
         x: 'rpm',
         charts: [{type: 'area', y: 'horsepower', fill: '#2ca02c'}],
-        maxLength: 7,
+        maxLength: 30,
         width: 700,
         height: 450,
         // animation:true
@@ -45,7 +45,7 @@ export default class App extends React.Component {
     barChartConfig = {
         x: 'rpm',
         charts: [{type: 'bar', y: 'torque', color: 'EngineType', colorDomain: ['', '', 'piston']}],
-        maxLength: 7,
+        maxLength: 30,
         width: 700,
         height: 450,
         // animation:true
@@ -84,7 +84,7 @@ export default class App extends React.Component {
 
                     [this.state.timer, randomY*8, randomY, 'rotary']
                 ],
-                scatterPlot:[[this.state.timer,randomY*2,randomY*3,randomY*5,'piston'],[this.state.timer,randomY*5,randomY*6,randomY*9,'rotary']],
+                scatterPlot:[[this.state.timer,randomY*2,randomY*3,'rotary',randomY*5],[this.state.timer,randomY*5,randomY*6,'rotary',randomY*9]],
                 timer: this.state.timer + 1
             });
 
@@ -98,9 +98,7 @@ export default class App extends React.Component {
             <div>
                 <center><h1>Charting Config Samples</h1></center>
                 <Row title="Line Series" chart="line" media={true} actionBar={true}>
-                    <div>
-                        <VizG config={this.lineChartConfig} metadata={this.metadata} data={this.state.data}/>
-                    </div>
+                    <VizG config={this.lineChartConfig} metadata={this.metadata} data={this.state.data}/>
 
                     <br/>
                 </Row>
@@ -120,8 +118,38 @@ export default class App extends React.Component {
                     <div>
                         <VizG config={this.scatterPlotConfig} metadata={this.metadata} data={this.state.scatterPlot}/>
                     </div>
+
+                </Row>
+                <Row title="Line Series" chart="line" media={true} actionBar={true}>
+                    <VizG config={this.lineChartConfig} metadata={this.metadata} data={this.state.data}/>
+
+                    <br/>
+                </Row>
+                <Row title="Bar Series" chart="bar" media={true} actionBar={true}>
+                    <div>
+                        <VizG config={this.barChartConfig} metadata={this.metadata} data={this.state.data}/>
+                    </div>
                     <br/><br/>
                 </Row>
+                <Row title="Area Series" chart="area" media={true} actionBar={true}>
+                    <div>
+                        <VizG config={this.singleAreaChartConfig} metadata={this.metadata} data={this.state.data2}/>
+                    </div>
+                    <br/><br/>
+                </Row>
+                <Row title="Scatter Plots" chart="scatter" media={true} actionBar={true}>
+                    <div>
+                        <VizG config={this.scatterPlotConfig} metadata={this.metadata} data={this.state.scatterPlot}/>
+                    </div>
+
+                </Row>
+                <Row title="Scatter Plots" chart="scatter" media={true} actionBar={true}>
+                    <div>
+                        <VizG config={this.scatterPlotConfig} metadata={this.metadata} data={this.state.scatterPlot}/>
+                    </div>
+
+                </Row>
+
 
                 {/*<Row title="asd" chart="asd"/>*/}
             </div>

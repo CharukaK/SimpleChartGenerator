@@ -16,8 +16,8 @@ export default class LineChartConfigSample extends React.Component {
     }
 
     metadata = {
-        names: ['rpm', 'torque', 'horsepower', 'EngineType'],
-        types: ['linear', 'linear', 'linear', 'ordinal']
+        names: ['rpm', 'torque', 'horsepower','EngineType','weight' ],
+        types: ['linear', 'linear', 'linear', 'ordinal','linear']
     };
 
 

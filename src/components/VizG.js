@@ -124,7 +124,7 @@ export default class VizG extends React.Component {
      * @private
      */
     _getColorRangeArray(scheme) {
-        return Array.apply(null, {length: scheme.substring(8, 10)}).map(Number.call, Number).map((num) => VizG._getColorFromSchemaOrdinal(scheme,num));
+        return Array.apply(null, {length: scheme.substring(8, 10)}).map(Number.call, Number).map((num) => VizG._getColorFromSchemaOrdinal(scheme, num));
     }
 
 
@@ -144,10 +144,13 @@ export default class VizG extends React.Component {
 
 
             config.charts.map((chart, chartIndex) => {
+
                 let colorScale = chart.colorScale || 'category10';
                 let yIndex = metadata.names.indexOf(chart.y);
                 let x0index = metadata.names.indexOf(chart.x0);
                 let categoricalIndex = metadata.names.indexOf(chart.color) || -1;
+
+
                 let dataSetName = '';
                 let maxColorIndex = Array.isArray(colorScale) ?
                     colorScale.length : parseInt(colorScale.substring(8, 10));
@@ -176,9 +179,8 @@ export default class VizG extends React.Component {
                         multiDimensional = true;
                     }
 
-                    if (!dataSets.hasOwnProperty(dataSetName)) {
-                        dataSets[dataSetName] = [];
-                    }
+
+                    dataSets[dataSetName]=dataSets[dataSetName] || [];
 
                     // console.info(config.maxLength);
                     if (dataSets[dataSetName].length > config.maxLength) {
@@ -242,7 +244,7 @@ export default class VizG extends React.Component {
                     let yIndex = metadata.names.indexOf(chart.y);
                     let colorIndex = metadata.names.indexOf(chart.color);
                     let sizeIndex = metadata.names.indexOf(chart.size);
-
+                    console.info(sizeIndex);
 
                     colorRange = Array.isArray(colorScale) ?
                         colorScale : this._getColorRangeArray(colorScale);
@@ -256,7 +258,7 @@ export default class VizG extends React.Component {
                         }
 
 
-                        if(dataSets[dataSetName].length>chart.maxLength){
+                        if (dataSets[dataSetName].length > chart.maxLength) {
                             dataSets[dataSetName].shift();
                         }
 
@@ -272,6 +274,52 @@ export default class VizG extends React.Component {
 
 
                     });
+
+                });
+            }
+
+
+            if (!config.type) {
+                plotType = 'arc';
+                config.charts.map((chart, chartIndex) => {
+                    let colorScale = chart.colorScale || 'category10';
+                    let xIndex = metadata.names.indexOf(chart.x);
+                    let colorIndex = metadata.names.indexOf(chart.color);
+                    let sizeIndex = metadata.names.indexOf(chart.size);
+                    // console.info(sizeIndex);
+
+                    colorRange = Array.isArray(colorScale) ?
+                        colorScale : this._getColorRangeArray(colorScale);
+                    colorType = (metadata.types[colorIndex] === 'linear' ? 'linear' : 'category');
+
+                    if (config.percentage) {
+                        if(!initialized){
+                            chartArray.push({
+                                type:'arc',
+                                dataSet:metadata.names[xIndex],
+                                mode:chart.mode,
+                                percentage:true
+                            });
+                        }
+
+                        dataSets[metadata.names[xIndex]]=dataSets[metadata.names[xIndex]] || [];
+
+                        data.map((datum)=>{
+                            let angle1=2*Math.PI*datum[xIndex]/100;
+                            let angle2=2*Math.PI*(100-datum[xIndex])/100;
+
+
+                            dataSets[metadata.names[xIndex]]=[
+                                {angle0:0,angle:angle1,color:0,radius0:(this.state.height)},
+                                {angle0:angle1,angle:angle2,color:1}
+                            ]
+
+                        })
+
+                    } else {
+
+                    }
+
 
                 });
             }
@@ -490,6 +538,8 @@ export default class VizG extends React.Component {
                     />
                 );
             });
+        } else if (plotType==='arc'){
+
         }
 
         return (
@@ -532,24 +582,38 @@ export default class VizG extends React.Component {
                             />
                         </div>
 
-                    </div>:
-                    <div>
-                        <FlexibleWidthXYPlot
-                            height={this.state.height}
-                            animation={animation}
-                            margin={{left: 100}}
-                            colorRange={colorRange}
-                            colorType={colorType}
+                    </div> :
+                    (plotType === 'scatter' ?
+                            <div>
+                                <FlexibleWidthXYPlot
+                                    height={this.state.height}
+                                    animation={animation}
+                                    margin={{left: 100}}
+                                    colorRange={colorRange}
+                                    colorType={colorType}
 
-                        >
-                            <XAxis/>
-                            <YAxis/>
-                            <HorizontalGridLines/>
-                            <VerticalGridLines/>
-                            {chartComponents}
+                                >
+                                    <XAxis/>
+                                    <YAxis/>
+                                    <HorizontalGridLines/>
+                                    <VerticalGridLines/>
+                                    {chartComponents}
 
-                        </FlexibleWidthXYPlot>
-                    </div>
+                                </FlexibleWidthXYPlot>
+                            </div> :
+                            <FlexibleWidthXYPlot
+                                xDomain={[-(this.state.width/2), this.state.width/2]}
+                                yDomain={[-(this.state.height/2), this.state.height/2]}
+                                height={this.state.height}
+                                colorRange={colorRange}
+                                colorType={colorType}
+                            >
+
+
+
+
+                            </FlexibleWidthXYPlot>
+                    )
 
 
                 }

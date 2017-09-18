@@ -1,6 +1,7 @@
 import React from 'react';
 
 import {
+    FlexibleWidthXYPlot,
     XYPlot,
     XAxis,
     YAxis,
@@ -9,97 +10,247 @@ import {
     LineSeries,
     Crosshair,
     MarkSeries,
+    LineMarkSeries,
     VerticalBarSeries,
-    HorizontalBarSeries
+    HorizontalBarSeries,
+    ArcSeries
 } from 'react-vis';
 import AreaMarkSeries from './AreaMarkSeries';
 import {scaleLinear} from 'd3-scale';
-const DATA = [
-    [
-        {x: 1, y: 10},
-        {x: 2, y: 7},
-        {x: 3, y: 15}
-    ],
-    [
-        {x: 1, y: 20},
-        {x: 2, y: 5},
-        {x: 3, y: 15}
-    ]
-];
-import * as d3 from 'd3';
+import VIzG2 from "./VIzG2";
+import {Row} from "./util";
+
+
 export default class DynamicCrosshair extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            crosshairValues: []
+            data: [{x: 1, y: 10,color: 'piston'}, {x: 1, y: 20,  color: 'rotary'}],
+            height:800,
+            width:450,
+            timer:1,
         };
-
-        this._onMouseLeave = this._onMouseLeave.bind(this);
-        this._onNearestX = this._onNearestX.bind(this);
     }
 
-    /**
-     * Event handler for onNearestX.
-     * @param {Object} value Selected value.
-     * @param {index} index Index of the value in the data array.
-     * @private
-     */
-    _onNearestX(value, info) {
-        this.setState({crosshairValues: DATA.map(d => d[info.index])});
-        console.info(value,info);
-    }
+    metadata = {
+        names: ['rpm', 'torque', 'horsepower', 'EngineType', 'weight'],
+        types: ['linear', 'linear', 'linear', 'ordinal', 'linear']
+    };
 
 
-    _getFromLinearColorScale(domain,range,value){
-        return d3.scaleLinear().range(['1f77b4','ff7f0e']).domain([0,100])(value);
+    /*****************[START] Chart Config******************/
+    lineChartConfig = {
+        x: 'rpm',
+        charts: [{type: 'line', y: 'torque', color: 'EngineType', colorDomain: ['', '', 'piston']}],
+        maxLength: 7,
+        width: 700,
+        height: 450,
+        // animation:true
+    };
+
+    singleAreaChartConfig = {
+        x: 'rpm',
+        charts: [{type: 'area', y: 'horsepower', fill: '#2ca02c'}],
+        maxLength: 7,
+        width: 700,
+        height: 450,
+        // animation:true
+    };
+
+    barChartConfig = {
+        x: 'rpm',
+        charts: [{type: 'bar', y: 'torque', color: 'EngineType', colorDomain: ['', '', 'piston']}],
+        maxLength: 7,
+        width: 700,
+        height: 450,
+        // animation:true
+    };
+
+    /*****************[END] Chart Config******************/
+
+
+    componentDidMount() {
+        setInterval(() => {
+            let randomY = Math.random() * 100;
+            let {data}=this.state;
+            // console.info(data);
+            data.push({
+                x: parseInt(this.state.timer),
+                y: this.state.timer*2,
+
+                color: 'piston'
+            });
+            data.push({x: parseInt(this.state.timer), y: this.state.timer*7,  color: 'rotary'});
+
+            this.setState({
+                data: data,
+
+                timer: this.state.timer + 1
+            })
+            ;
+
+        }, 500);
     }
-    /**
-     * Event handler for onMouseLeave.
-     * @private
-     */
-    _onMouseLeave() {
-        this.setState({crosshairValues: []});
-    }
+
 
     render() {
         return (
-            <XYPlot
-                width={300}
-                height={300}
-                stackBy={'y'}
-                colorRange={['#3944ff','#ff4933','#1bff31']}
-                colorType='category'
+            <div>
+                <XYPlot
+                    height={450}
+                    width={800}
+                    colorType="category"
+                    xType='linear'
+                    margin={{left: 100}}
 
-            >
-                <VerticalGridLines />
-                <HorizontalGridLines />
-                <XAxis />
-                <YAxis />
-                <VerticalBarSeries
-                    className="mark-series-example"
-                    strokeWidth={2}
-                    opacity="0.8"
+                    animation={false}
+                >
 
-                    data={[
-                        {x: 1, y: 10, color:'piston'},
-                        {x: 1.7, y: 12,color:'rotary'},
-                        {x: 2, y: 5,  color:'piston'},
-                        {x: 2, y: 15, color:'rotary'},
-                        {x: 2.5, y: 7, color:'piston2'}
-                    ]}/>
-                <VerticalBarSeries
-                    className="mark-series-example"
-                    strokeWidth={2}
-                    opacity="0.8"
+                    <HorizontalGridLines/>
+                    <VerticalGridLines/>
 
-                    data={[
-                        {x: 1, y: 10, color:'piston'},
-                        {x: 1.7, y: 12,color:'rotary'},
-                        {x: 2, y: 5,  color:'piston'},
-                        {x: 2, y: 15, color:'rotary'},
-                        {x: 2.5, y: 7, color:'piston2'}
-                    ]}/>
-            </XYPlot>
+
+                    <XAxis title='x'/>
+                    <YAxis title='y'/>
+                    <VerticalBarSeries data={this.state.data}/>
+                </XYPlot>
+                <XYPlot
+                    height={450}
+                    width={800}
+                    colorType="category"
+                    xType='linear'
+                    margin={{left: 100}}
+                    animation={false}
+
+
+                >
+
+                    <HorizontalGridLines/>
+                    <VerticalGridLines/>
+
+
+                    <XAxis title='x'/>
+                    <YAxis title='y'/>
+                    <LineMarkSeries data={this.state.data}/>
+                </XYPlot>
+                <XYPlot
+                    height={450}
+                    width={800}
+                    colorType="category"
+                    xType='linear'
+                    margin={{left: 100}}
+                    animation={false}
+
+
+                >
+
+                    <HorizontalGridLines/>
+                    <VerticalGridLines/>
+
+
+                    <XAxis title='x'/>
+                    <YAxis title='y'/>
+                    <AreaMarkSeries data={this.state.data}/>
+                </XYPlot>
+
+                <XYPlot
+                    height={450}
+                    width={800}
+                    colorType="category"
+                    xType='linear'
+                    margin={{left: 100}}
+                    animation={false}
+
+
+                >
+
+                    <HorizontalGridLines/>
+                    <VerticalGridLines/>
+
+
+                    <XAxis title='x'/>
+                    <YAxis title='y'/>
+                    <MarkSeries data={this.state.data}/>
+                </XYPlot>
+                <XYPlot
+                    height={450}
+                    width={800}
+                    colorType="category"
+                    xType='linear'
+                    margin={{left: 100}}
+
+                    animation={false}
+                >
+
+                    <HorizontalGridLines/>
+                    <VerticalGridLines/>
+
+
+                    <XAxis title='x'/>
+                    <YAxis title='y'/>
+                    <VerticalBarSeries data={this.state.data}/>
+                </XYPlot>
+                <XYPlot
+                    height={450}
+                    width={800}
+                    colorType="category"
+                    xType='linear'
+                    margin={{left: 100}}
+                    animation={false}
+
+
+                >
+
+                    <HorizontalGridLines/>
+                    <VerticalGridLines/>
+
+
+                    <XAxis title='x'/>
+                    <YAxis title='y'/>
+                    <LineMarkSeries data={this.state.data}/>
+                </XYPlot>
+                <XYPlot
+                    height={450}
+                    width={800}
+                    colorType="category"
+                    xType='linear'
+                    margin={{left: 100}}
+                    animation={false}
+
+
+                >
+
+                    <HorizontalGridLines/>
+                    <VerticalGridLines/>
+
+
+                    <XAxis title='x'/>
+                    <YAxis title='y'/>
+                    <AreaMarkSeries data={this.state.data}/>
+                </XYPlot>
+
+                <XYPlot
+                    height={450}
+                    width={800}
+                    colorType="category"
+                    xType='linear'
+                    margin={{left: 100}}
+                    animation={false}
+
+
+                >
+
+                    <HorizontalGridLines/>
+                    <VerticalGridLines/>
+
+
+                    <XAxis title='x'/>
+                    <YAxis title='y'/>
+                    <MarkSeries data={this.state.data}/>
+                </XYPlot>
+            </div>
+
+
         );
     }
 }
