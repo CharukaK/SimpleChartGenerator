@@ -13,7 +13,10 @@ import {
     LineMarkSeries,
     VerticalBarSeries,
     HorizontalBarSeries,
-    ArcSeries
+    ArcSeries,
+    LineMarkSeriesCanvas,
+    VerticalBarSeriesCanvas,
+    MarkSeriesCanvas
 } from 'react-vis';
 import AreaMarkSeries from './AreaMarkSeries';
 import {scaleLinear} from 'd3-scale';
@@ -45,7 +48,7 @@ export default class DynamicCrosshair extends React.Component {
         maxLength: 7,
         width: 700,
         height: 450,
-        // animation:true
+        animation:true
     };
 
     singleAreaChartConfig = {
@@ -54,7 +57,7 @@ export default class DynamicCrosshair extends React.Component {
         maxLength: 7,
         width: 700,
         height: 450,
-        // animation:true
+        animation:true
     };
 
     barChartConfig = {
@@ -63,7 +66,7 @@ export default class DynamicCrosshair extends React.Component {
         maxLength: 7,
         width: 700,
         height: 450,
-        // animation:true
+        animation:true
     };
 
     /*****************[END] Chart Config******************/
@@ -112,7 +115,7 @@ export default class DynamicCrosshair extends React.Component {
 
                     <XAxis title='x'/>
                     <YAxis title='y'/>
-                    <VerticalBarSeries data={this.state.data}/>
+                    <VerticalBarSeriesCanvas data={this.state.data}/>
                 </XYPlot>
                 <XYPlot
                     height={450}
@@ -131,7 +134,26 @@ export default class DynamicCrosshair extends React.Component {
 
                     <XAxis title='x'/>
                     <YAxis title='y'/>
-                    <LineMarkSeries data={this.state.data}/>
+                    <LineMarkSeriesCanvas data={this.state.data}/>
+                </XYPlot>
+
+                <XYPlot
+                    height={450}
+                    width={800}
+                    colorType="category"
+                    xType='linear'
+                    margin={{left: 100}}
+
+                    animation={false}
+                >
+
+                    <HorizontalGridLines/>
+                    <VerticalGridLines/>
+
+
+                    <XAxis title='x'/>
+                    <YAxis title='y'/>
+                    <VerticalBarSeriesCanvas data={this.state.data}/>
                 </XYPlot>
                 <XYPlot
                     height={450}
@@ -150,29 +172,8 @@ export default class DynamicCrosshair extends React.Component {
 
                     <XAxis title='x'/>
                     <YAxis title='y'/>
-                    <AreaMarkSeries data={this.state.data}/>
-                </XYPlot>
-
-                <XYPlot
-                    height={450}
-                    width={800}
-                    colorType="category"
-                    xType='linear'
-                    margin={{left: 100}}
-                    animation={false}
-
-
-                >
-
-                    <HorizontalGridLines/>
-                    <VerticalGridLines/>
-
-
-                    <XAxis title='x'/>
-                    <YAxis title='y'/>
-                    <MarkSeries data={this.state.data}/>
-                </XYPlot>
-                <XYPlot
+                    <LineMarkSeriesCanvas data={this.state.data}/>
+                </XYPlot><XYPlot
                     height={450}
                     width={800}
                     colorType="category"
@@ -188,7 +189,7 @@ export default class DynamicCrosshair extends React.Component {
 
                     <XAxis title='x'/>
                     <YAxis title='y'/>
-                    <VerticalBarSeries data={this.state.data}/>
+                    <VerticalBarSeriesCanvas data={this.state.data}/>
                 </XYPlot>
                 <XYPlot
                     height={450}
@@ -207,7 +208,24 @@ export default class DynamicCrosshair extends React.Component {
 
                     <XAxis title='x'/>
                     <YAxis title='y'/>
-                    <LineMarkSeries data={this.state.data}/>
+                    <LineMarkSeriesCanvas data={this.state.data}/>
+                </XYPlot><XYPlot
+                    height={450}
+                    width={800}
+                    colorType="category"
+                    xType='linear'
+                    margin={{left: 100}}
+
+                    animation={false}
+                >
+
+                    <HorizontalGridLines/>
+                    <VerticalGridLines/>
+
+
+                    <XAxis title='x'/>
+                    <YAxis title='y'/>
+                    <VerticalBarSeriesCanvas data={this.state.data}/>
                 </XYPlot>
                 <XYPlot
                     height={450}
@@ -226,9 +244,25 @@ export default class DynamicCrosshair extends React.Component {
 
                     <XAxis title='x'/>
                     <YAxis title='y'/>
-                    <AreaMarkSeries data={this.state.data}/>
-                </XYPlot>
+                    <LineMarkSeriesCanvas data={this.state.data}/>
+                </XYPlot><XYPlot
+                    height={450}
+                    width={800}
+                    colorType="category"
+                    xType='linear'
+                    margin={{left: 100}}
 
+                    animation={false}
+                >
+
+                    <HorizontalGridLines/>
+                    <VerticalGridLines/>
+
+
+                    <XAxis title='x'/>
+                    <YAxis title='y'/>
+                    <VerticalBarSeriesCanvas data={this.state.data}/>
+                </XYPlot>
                 <XYPlot
                     height={450}
                     width={800}
@@ -246,7 +280,7 @@ export default class DynamicCrosshair extends React.Component {
 
                     <XAxis title='x'/>
                     <YAxis title='y'/>
-                    <MarkSeries data={this.state.data}/>
+                    <LineMarkSeriesCanvas data={this.state.data}/>
                 </XYPlot>
             </div>
 

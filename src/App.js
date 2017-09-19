@@ -2,7 +2,7 @@ import React from 'react';
 
 import {Row} from './components/util';
 import VizG from './components/VizG';
-
+import Perf from 'react-addons-perf';
 
 export default class App extends React.Component {
     constructor(props) {
@@ -18,8 +18,8 @@ export default class App extends React.Component {
     }
 
     metadata = {
-        names: ['rpm', 'torque', 'horsepower','EngineType','weight' ],
-        types: ['linear', 'linear', 'linear', 'ordinal','linear']
+        names: ['rpm', 'torque', 'horsepower', 'EngineType', 'weight'],
+        types: ['linear', 'linear', 'linear', 'ordinal', 'linear']
     };
 
 
@@ -72,7 +72,25 @@ export default class App extends React.Component {
 
 
     componentDidMount() {
+        Perf.start();
+        setTimeout(() => {
+            // Perf.stop();
+            Perf.printWasted();
+            console.info('haha');
+        }, 60000*5);
+        setTimeout(() => {
+            // Perf.stop();
+            Perf.printWasted();
+            console.info('haha');
+        }, 60000 * 10);
+        setTimeout(() => {
+            Perf.stop();
+            Perf.printWasted();
+            console.info('haha');
+        }, 60000 * 15);
+
         setInterval(() => {
+            // Perf.start();
             let randomY = Math.random() * 100;
             this.setState({
                 data: [
@@ -82,9 +100,9 @@ export default class App extends React.Component {
                 ],
                 data2: [
 
-                    [this.state.timer, randomY*8, randomY, 'rotary']
+                    [this.state.timer, randomY * 8, randomY, 'rotary']
                 ],
-                scatterPlot:[[this.state.timer,randomY*2,randomY*3,'rotary',randomY*5],[this.state.timer,randomY*5,randomY*6,'rotary',randomY*9]],
+                scatterPlot: [[this.state.timer, randomY * 2, randomY * 3, 'rotary', randomY * 5], [this.state.timer, randomY * 5, randomY * 6, 'rotary', randomY * 9]],
                 timer: this.state.timer + 1
             });
 
@@ -97,59 +115,31 @@ export default class App extends React.Component {
 
             <div>
                 <center><h1>Charting Config Samples</h1></center>
-                <Row title="Line Series" chart="line" media={true} actionBar={true}>
+
+                <div>
                     <VizG config={this.lineChartConfig} metadata={this.metadata} data={this.state.data}/>
-
-                    <br/>
-                </Row>
-                <Row title="Bar Series" chart="bar" media={true} actionBar={true}>
-                    <div>
-                        <VizG config={this.barChartConfig} metadata={this.metadata} data={this.state.data}/>
-                    </div>
-                    <br/><br/>
-                </Row>
-                <Row title="Area Series" chart="area" media={true} actionBar={true}>
-                    <div>
-                        <VizG config={this.singleAreaChartConfig} metadata={this.metadata} data={this.state.data2}/>
-                    </div>
-                    <br/><br/>
-                </Row>
-                <Row title="Scatter Plots" chart="scatter" media={true} actionBar={true}>
-                    <div>
-                        <VizG config={this.scatterPlotConfig} metadata={this.metadata} data={this.state.scatterPlot}/>
-                    </div>
-
-                </Row>
-                <Row title="Line Series" chart="line" media={true} actionBar={true}>
+                </div>
+                <div>
+                    <VizG config={this.barChartConfig} metadata={this.metadata} data={this.state.data}/>
+                </div>
+                <div>
+                    <VizG config={this.singleAreaChartConfig} metadata={this.metadata} data={this.state.data2}/>
+                </div>
+                <div>
+                    <VizG config={this.scatterPlotConfig} metadata={this.metadata} data={this.state.scatterPlot}/>
+                </div>
+                <div>
                     <VizG config={this.lineChartConfig} metadata={this.metadata} data={this.state.data}/>
-
-                    <br/>
-                </Row>
-                <Row title="Bar Series" chart="bar" media={true} actionBar={true}>
-                    <div>
-                        <VizG config={this.barChartConfig} metadata={this.metadata} data={this.state.data}/>
-                    </div>
-                    <br/><br/>
-                </Row>
-                <Row title="Area Series" chart="area" media={true} actionBar={true}>
-                    <div>
-                        <VizG config={this.singleAreaChartConfig} metadata={this.metadata} data={this.state.data2}/>
-                    </div>
-                    <br/><br/>
-                </Row>
-                <Row title="Scatter Plots" chart="scatter" media={true} actionBar={true}>
-                    <div>
-                        <VizG config={this.scatterPlotConfig} metadata={this.metadata} data={this.state.scatterPlot}/>
-                    </div>
-
-                </Row>
-                <Row title="Scatter Plots" chart="scatter" media={true} actionBar={true}>
-                    <div>
-                        <VizG config={this.scatterPlotConfig} metadata={this.metadata} data={this.state.scatterPlot}/>
-                    </div>
-
-                </Row>
-
+                </div>
+                <div>
+                    <VizG config={this.barChartConfig} metadata={this.metadata} data={this.state.data}/>
+                </div>
+                <div>
+                    <VizG config={this.singleAreaChartConfig} metadata={this.metadata} data={this.state.data2}/>
+                </div>
+                <div>
+                    <VizG config={this.scatterPlotConfig} metadata={this.metadata} data={this.state.scatterPlot}/>
+                </div>
 
                 {/*<Row title="asd" chart="asd"/>*/}
             </div>

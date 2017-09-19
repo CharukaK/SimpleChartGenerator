@@ -55,7 +55,14 @@ import {
     MarkSeries,
     AreaSeries,
     Crosshair,
-    DiscreteColorLegend
+    DiscreteColorLegend,
+    VerticalBarSeriesCanvas,
+    HorizontalBarSeriesCanvas,
+    MarkSeriesCanvas,
+    LineMarkSeriesCanvas,
+    VerticalRectSeriesCanvas,
+    HorizontalRectSeriesCanvas
+
 } from 'react-vis';
 import AreaMarkSeries from './AreaMarkSeries';
 
@@ -253,9 +260,9 @@ export default class VizG extends React.Component {
                     let dataSetName = 'scatterPlot' + chartIndex;
                     chartArray[chartIndex].dataSetName = dataSetName;
                     data.map((datum, datIndex) => {
-                        if (!dataSets.hasOwnProperty(dataSetName)) {
-                            dataSets[dataSetName] = [];
-                        }
+                        
+                        dataSets[dataSetName] =dataSets[dataSetName] || [];
+                        
 
 
                         if (dataSets[dataSetName].length > chart.maxLength) {
@@ -285,7 +292,7 @@ export default class VizG extends React.Component {
                     let colorScale = chart.colorScale || 'category10';
                     let xIndex = metadata.names.indexOf(chart.x);
                     let colorIndex = metadata.names.indexOf(chart.color);
-                    let sizeIndex = metadata.names.indexOf(chart.size);
+                    // let sizeIndex = metadata.names.indexOf(chart.size);
                     // console.info(sizeIndex);
 
                     colorRange = Array.isArray(colorScale) ?
@@ -312,9 +319,9 @@ export default class VizG extends React.Component {
                             dataSets[metadata.names[xIndex]]=[
                                 {angle0:0,angle:angle1,color:0,radius0:(this.state.height)},
                                 {angle0:angle1,angle:angle2,color:1}
-                            ]
+                            ];
 
-                        })
+                        });
 
                     } else {
 
@@ -530,7 +537,7 @@ export default class VizG extends React.Component {
             // console.info(colorType);
             chartArray.map((chart, chartIndex) => {
                 chartComponents.push(
-                    <MarkSeries
+                    <MarkSeriesCanvas
                         key={`scatter-${chartIndex}-${chart.dataSetName}`}
                         sizeRange={[5, 20]}
                         data={dataSets[chart.dataSetName]}
@@ -553,7 +560,7 @@ export default class VizG extends React.Component {
                                 animation={animation}
                                 xType={metadata.types[metadata.names.indexOf(config.x)]}
                                 stackBy={stacked ? 'y' : null}
-                                margin={{left: 100}}
+                                
                                 onMouseLeave={this._onPlaneMouseOut}
 
                             >
@@ -588,7 +595,7 @@ export default class VizG extends React.Component {
                                 <FlexibleWidthXYPlot
                                     height={this.state.height}
                                     animation={animation}
-                                    margin={{left: 100}}
+                                    
                                     colorRange={colorRange}
                                     colorType={colorType}
 

@@ -7,12 +7,25 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
+import Perf from 'react-addons-perf';
+
 
 export class Row extends React.Component{
     constructor(props) {
         super(props);
-
+        this.state ={
+           children:null,
+            title:this.props.title,
+            subtitle:this.props.subtitle,
+            actionBar:this.props.actionBar,
+            chart:this.props.chart
+        };
     }
+    componentWillReceiveProps(props){
+        this.setState({children:props.children});
+    }
+
+
 
     render() {
         return (
@@ -36,16 +49,18 @@ export class Row extends React.Component{
                     <Card style={{marginTop:50}} >
                         {
                             this.props.media?
-                                <AppBar style={{marginBottom:10}} title={this.props.title} showMenuIconButton={false} />:
-                                <CardTitle title={this.props.title} subtitle={this.props.subtitle}/>
+                                <AppBar style={{marginBottom:10}} title={this.state.title} showMenuIconButton={false} />:
+                                <CardTitle title={this.state.title} subtitle={this.state.subtitle}/>
                         }
                         {/*<CardTitle/>*/}
                         <CardMedia>
-                            {this.props.children}
+
+                            {this.state.children}
+
                         </CardMedia>
                         <CardActions>
-                            <FlatButton label={this.props.actionBar?'View Usage' : ' '} onClick={()=>{
-                                window.location.href=this.props.chart+'-charts';
+                            <FlatButton label={this.state.actionBar?'View Usage' : ' '} onClick={()=>{
+                                window.location.href=this.state.chart+'-charts';
                             }}/>
                             {/*<FlatButton label="Action2" />*/}
                         </CardActions>
